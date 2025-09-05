@@ -1,0 +1,29 @@
+import React from 'react'
+import { Button } from '../../components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import logo from "../../assets/logo.png";
+import { SignUp } from '@clerk/clerk-react';
+
+function SignupPage() {
+    const navigate = useNavigate();
+  return (
+    <>
+      <nav className="sticky  top-0  w-full flex justify-between border-b-2 border-blue-500 ">
+        <img className="h-12" src={logo} alt="" />
+        <Button
+          onClick={() => navigate("/login")}
+          className="m-2 mr-5 bg-white text-black hover:bg-black hover:text-white"
+        >
+          Login
+        </Button>
+        
+      </nav>
+
+      <div className=" min-h-screen bg-gray-50 flex items-center justify-center">
+        <SignUp></SignUp>
+      </div>
+    </>
+  )
+}
+
+export default SignupPage
