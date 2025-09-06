@@ -9,7 +9,7 @@ function SignupPage() {
   return (
     <>
       <nav className="sticky  top-0  w-full flex justify-between border-b-2 border-blue-500 ">
-        <img className="h-12" src={logo} alt="" />
+        <img onClick={() => navigate("/")} className="h-12" src={logo} alt="" />
         <Button
           onClick={() => navigate("/login")}
           className="m-2 mr-5 bg-white text-black hover:bg-black hover:text-white"

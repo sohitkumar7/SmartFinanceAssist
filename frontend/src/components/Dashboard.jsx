@@ -1,5 +1,6 @@
 import React from 'react';
 import { useUser, SignOutButton } from '@clerk/clerk-react';
+import Header from './Header.jsx';
 
 function Dashboard() {
   const { user, isLoaded, isSignedIn } = useUser();
@@ -9,12 +10,9 @@ function Dashboard() {
 
   return (
     <div>
-      <p>Welcome, {user.firstName}</p>
-      <SignOutButton>
-        <button className="text-black bg-gray-200 px-4 py-2 rounded">
-          Logout
-        </button>
-      </SignOutButton>
+
+      <Header></Header>
+      
     </div>
 
     
