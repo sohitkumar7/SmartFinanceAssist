@@ -38,10 +38,11 @@ function Header() {
 
           <SignedOut>
             <Link to="/login">
-              <Button className="m-2 bg-white text-black hover:bg-black hover:text-white">
+              <Button className="m-2 border-2 bg-white text-black hover:bg-black hover:text-white">
                 Login
               </Button>
             </Link>
+            
           </SignedOut>
 
         </div>

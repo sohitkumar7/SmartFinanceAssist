@@ -1,10 +1,32 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import banner from "../../assets/banner.jpg";
 function Hero() {
+
+  const imageref = useRef();
+
+useEffect(() => {
+  const imageElement = imageref.current;
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY;
+    const maxScroll = 300; 
+    const clamped = Math.min(scrollPosition, maxScroll);
+
+    const rotation = 15 - (clamped / maxScroll) * 15;
+
+    imageElement.style.transform = `rotateX(${rotation}deg)`;
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
+
+
   return (
-    <div className="pb-20 px-4 mt-15">
+    <div className="pb-20 px-4 mt-10">
       <div className="container mx-auto text-center">
         <h1 className="text-5xl md:text-8xl lg:text-[105px] pb-6 font-extrabold leading-tight tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
           Manage Your Finances <br />
@@ -28,17 +50,19 @@ function Hero() {
           </Link>
         </div>
 
-        <div>
-          <div>
+        <div className="hero-image-wrapper">
+          <div ref={imageref} className="hero-image">
             <img
               className="rounded-lg shadow-2xl border mx-auto"
-              width={1280}
-              height={720}
+              width={1000}
+              height={500}
               src={banner}
               alt=""
             />
           </div>
         </div>
+
+        
       </div>
     </div>
   );
