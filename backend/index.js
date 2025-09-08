@@ -2,7 +2,7 @@ import express from "express"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
 import cookieParser from "cookie-parser";
-
+import userRoute from "./Router/userRouter.js"
 const app = express();
 dotenv.config({quiet: true});
 
@@ -17,6 +17,9 @@ try {
 } catch (error) {
     console.log(error)
 }
+
+app.use("/api/Users",userRoute)
+
 app.listen(PORT,() => {
     console.log("Server is listening in port",PORT)
 })
