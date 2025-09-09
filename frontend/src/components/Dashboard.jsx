@@ -11,25 +11,7 @@ function Dashboard() {
   const { getToken } = useAuth();
 
   useEffect(() => {
-    const saveUser = async () => {
-      if (user) {
-        const token = await getToken();
-
-        await axios.post("http://localhost:5000/api/Users/register",
-          {
-            email: user.primaryEmailAddress.emailAddress,
-            name: user.fullName,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
-    };
-
-    saveUser();
+    
   }, [user]);
 
   return (

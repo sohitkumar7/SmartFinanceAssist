@@ -1,25 +1,33 @@
+import generatetoken from "../JWT/generateToken.js";
 import User from "../models/User.js";
+
 
 export const registerUser = async (req, res) => {
   try {
-    const { userId } = req.auth; // Clerk verified userId
+    
     const { email, name } = req.body;
 
     // Check if already exists
-    let existingUser = await User.findOne({ clerkId: userId });
+    let existingUser = await User.findOne({email});
     if (existingUser) {
-      return res.status(200).json(existingUser);
+      return res.json({
+        succes:false,
+        message:"user Already Exist"
+      });
     }
 
     // Create new user
-    const newUser = new User({
-      clerkId: userId,
+    const newUser = await User.create({
       email,
       name,
     });
 
-    await newUser.save();
-    res.status(201).json(newUser);
+    generatetoken(newUser._id,res);
+
+    res.status(201).json({
+      message:"User Created SuccessFully",
+      success:true,
+    });
 
   } catch (error) {
     console.error(error);
