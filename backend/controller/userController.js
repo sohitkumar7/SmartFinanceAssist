@@ -9,11 +9,14 @@ export const registerUser = async (req, res) => {
 
     // Check if already exists
     let existingUser = await User.findOne({email});
+
     if (existingUser) {
-      return res.json({
-        succes:false,
-        message:"user Already Exist"
-      });
+      generatetoken(existingUser._id,res);
+      return res.status(200).json({
+      message:"User login SuccessFully",
+      success:true,
+      user:existingUser,
+    });
     }
 
     // Create new user
@@ -27,6 +30,7 @@ export const registerUser = async (req, res) => {
     res.status(201).json({
       message:"User Created SuccessFully",
       success:true,
+      user:newUser,
     });
 
   } catch (error) {

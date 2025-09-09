@@ -6,6 +6,7 @@ import Transaction from './components/Transaction.jsx';
 import Account from './components/Account.jsx';
 import LoginPage from './pages/Authpage/LoginPage.jsx';
 import SignupPage from './pages/Authpage/SignupPage.jsx';
+import { Toaster } from 'react-hot-toast'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
       } />
 
     </Routes>
+     <Toaster/>
     </BrowserRouter>
   );
 }

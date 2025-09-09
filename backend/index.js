@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 import mongoose from "mongoose"
 import cookieParser from "cookie-parser";
 import userRoute from "./Router/userRouter.js"
-
+import cors from "cors"
 const app = express();
 dotenv.config({quiet: true});
 
