@@ -16,19 +16,7 @@ function App() {
       <Route path="/login" element={<LoginPage/>} />
       <Route path="/signup" element={<SignupPage/>} />
       <Route path="/dashboard" element={
-        <PrivateRoute>
           <Dashboard/>
-        </PrivateRoute>
-      } />
-      <Route path="/account" element={
-        <PrivateRoute>
-          <Account/>
-        </PrivateRoute>
-      } />
-      <Route path="/transaction" element={
-        <PrivateRoute>
-          <Transaction/>
-        </PrivateRoute>
       } />
 
     </Routes>
