@@ -1,40 +1,23 @@
-import generatetoken from "../JWT/generateToken.js";
-import User from "../models/User.js";
+import User from "../models/user.js";
+import { requireAuth } from "@clerk/express";
 
-
-export const registerUser = async (req, res) => {
+export const loginConstroller = async (req, res) => {
   try {
-    
-    const { email, name } = req.body;
+    const authUserId = req.auth.userId; // Clerk userId from token
+    const { clerkId } = req.params;
 
-    // Check if already exists
-    let existingUser = await User.findOne({email});
-
-    if (existingUser) {
-      generatetoken(existingUser._id,res);
-      return res.status(200).json({
-      message:"User login SuccessFully",
-      success:true,
-      user:existingUser,
-    });
+    // Prevent one user from fetching another user’s data
+    if (authUserId !== clerkId) {
+      return res.status(403).json({ message: "Forbidden" });
     }
 
-    // Create new user
-    const newUser = await User.create({
-      email,
-      name,
-    });
+    const user = await User.findOne({ clerkId });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    generatetoken(newUser._id,res);
-
-    res.status(201).json({
-      message:"User Created SuccessFully",
-      success:true,
-      user:newUser,
-    });
-
+    res.json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to register user" });
+    res.status(500).json({ message: "Error fetching user" });
   }
 };
+
+// ("/api/user/:clerkId", requireAuth()
