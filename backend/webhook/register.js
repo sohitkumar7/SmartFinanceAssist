@@ -6,6 +6,8 @@ app.post("/api/webhooks/register", express.json({ type: "application/json" }), a
   
   const payload = req.body;
   const headers = req.headers;
+  
+  console.log("📩 Incoming webhook:", headers, payload);
 
   try {
     const wh = new Webhook(webhookSecret);
