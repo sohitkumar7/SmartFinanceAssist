@@ -1,7 +1,7 @@
 import User from "../models/user.js";
 import { requireAuth } from "@clerk/express";
 
-export const loginConstroller = async (req, res) => {
+export const loginController = async (req, res) => {
   try {
     const authUserId = req.auth.userId; // Clerk userId from token
     const { clerkId } = req.params;
