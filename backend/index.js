@@ -5,88 +5,103 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import User from "./models/user.js";
 import { Webhook } from "svix";
-import userRouter from "./Router/userRouter.js";
+import loginRoute from "./Router/userRouter.js"
 
 dotenv.config();
 const app = express();
 
 // Middleware
 app.use(cookieParser());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-  credentials: true
-}));
-
-// Capture raw body as Buffer
-app.use(express.json({
-  verify: (req, res, buf) => {
-    req.rawBody = buf;
-  }
-}));
+app.use(cors());
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => {
     console.error("MongoDB connection error:", err);
-    process.exit(1);
+    process.exit(1); // Exit process on connection failure
   });
 
+// Note: You must check for the secret before using it
 const webhookSecret = process.env.WEBHOOK_SECRET;
+if (!webhookSecret) {
+  throw new Error('You must provide a WEBHOOK_SECRET in your .env file.');
+}
 
-app.post("/api/webhooks/register", async (req, res) => {
-  const headers = req.headers;
-  const payloadBuffer = req.rawBody; // Keep as Buffer
-
-  console.log("Signature:", headers['svix-signature']);
-  console.log("Timestamp:", headers['svix-timestamp']);
-  console.log("Raw body length:", payloadBuffer.length);
-
-  try {
-    const wh = new Webhook(webhookSecret);
-
-    // Pass Buffer directly, do NOT convert to string
-    wh.verify(payloadBuffer, headers['svix-signature'], headers['svix-timestamp']);
-
-    // Parse JSON only AFTER verification
-    const parsed = JSON.parse(payloadBuffer.toString('utf-8'));
-    const { type, data } = parsed;
-
-    if (type === "user.created") {
-      const { id, email_addresses, first_name, last_name } = data;
-      let user = await User.findOne({ clerkId: id });
-      if (!user) {
-        user = new User({
-          clerkId: id,
-          email: email_addresses[0].email_address,
-          name: `${first_name} ${last_name}`,
-        });
-        await user.save();
-      }
-    } else if (type === "user.deleted") {
-      await User.deleteOne({ clerkId: data.id });
+app.post(
+  "/api/webhooks/register",
+  // This middleware is crucial. It captures the raw body of the request
+  // as a Buffer, which is what Svix needs for signature verification.
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    // Check for a raw body. If express.raw() failed, this will be missing.
+    if (!req.body) {
+      return res.status(400).json({ error: "No raw body found. Ensure webhook is configured correctly." });
     }
 
-    res.status(200).json({ message: "User synced with MongoDB" });
-  } catch (err) {
-    console.error("Webhook verification failed:", err.message);
-    res.status(400).json({ error: "Invalid webhook" });
+    const payload = req.body;
+    const headers = req.headers;
+    let evt;
+
+    try {
+      const wh = new Webhook(webhookSecret);
+      // The verify method takes the raw payload buffer and the headers
+      evt = wh.verify(payload, headers);
+    } catch (err) {
+      console.error("❌ Webhook verification failed:", err.message);
+      return res.status(400).json({ error: "Invalid webhook signature or payload." });
+    }
+
+    console.log("✅ Webhook verified successfully.");
+
+    const { type, data } = evt;
+
+    try {
+      // Handle the event types
+      switch (type) {
+        case "user.created": {
+          const { id, email_addresses, first_name, last_name } = data;
+           const email = email_addresses[0]?.email_address;
+           console.log(email);
+          let user = await User.findOne({ email });
+          if (!user) {
+            user = new User({
+              clerkId: id,
+              email: email_addresses[0].email_address,
+              name: `${first_name} ${last_name}`,
+            });
+            await user.save();
+            console.log("✅ New user saved to MongoDB:", user.clerkId);
+          }
+          else{
+            console.log("❕ User with this email already exists:", email);
+            // It's not an error from the webhook perspective, so we don't send an error status.
+            // Returning a 200 OK prevents retries from Clerk.
+            return res.status(200).json({ success: true, message: "User already exists with this email." });
+          }
+          break;
+        }
+        case "user.deleted": {
+          await User.deleteOne({ clerkId: data.id });
+          console.log("✅ User deleted from MongoDB:", data.id);
+          break;
+        }
+        default:
+          console.log(`❕ Unhandled event type: ${type}`);
+          break;
+      }
+
+      res.status(200).json({ message: "User synced with MongoDB" });
+    } catch (dbError) {
+      console.error("❌ Database operation failed:", dbError);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   }
-});
+);
 
-// API Routes
-app.use("/api", userRouter);
-
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "OK", message: "Server is running" });
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
-});
+// Standard JSON middleware for other routes (if any)
+app.use(express.json());
+app.use("/api/login",loginRoute)
 
 const PORT = process.env.PORT || 4001;
 app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
