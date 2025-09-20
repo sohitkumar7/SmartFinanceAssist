@@ -6,13 +6,25 @@ import cors from "cors";
 import User from "./models/user.js";
 import { Webhook } from "svix";
 import loginRoute from "./Router/userRouter.js"
+import { ClerkExpressRequireAuth } from "@clerk/express";
 
 dotenv.config();
+console.log("CLERK_API_KEY:", process.env.CLERK_SECRET_KEY);
+console.log("CLERK_FRONTEND_API:", process.env.CLERK_FRONTEND_API);
+console.log("CLERK_JWT_KEY:", process.env.CLERK_JWT_KEY);
+
 const app = express();
 
 // Middleware
 app.use(cookieParser());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173"
+    ],
+    credentials: true,
+  })
+);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -101,7 +113,9 @@ app.post(
 
 // Standard JSON middleware for other routes (if any)
 app.use(express.json());
-app.use("/api/login",loginRoute)
+// app.use("/api/user",loginRoute)
+app.use("/api/user", ClerkExpressRequireAuth({ apiKey: process.env.CLERK_SECRET_KEY }), loginRoute);
+
 
 const PORT = process.env.PORT || 4001;
 app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));

@@ -4,5 +4,5 @@ import { requireAuth } from '@clerk/express';
 
 const router = express.Router();
 
-router.get("/user/:clerkId", requireAuth(), loginController);
+router.post("/login", requireAuth(), loginController);
 export default router;
