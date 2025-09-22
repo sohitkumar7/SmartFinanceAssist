@@ -4,15 +4,21 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import Header from "../components/Header.jsx";
-import { useSelector
+import { useSelector} from "react-redux";
+import { useNavigate } from "react-router-dom";
 
- } from "react-redux";
 function Dashboard() {
   const { user, isLoaded, isSignedIn } = useUser();
   const dispatch = useDispatch();
   const { isAuthenticated, backendUser } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
   useEffect(() => {
+
+    if (isLoaded && !isAuthenticated) {
+      navigate("/");
+    }
+
     // Only fetch the user if Clerk has loaded and the user is signed in.
     if (isLoaded && isSignedIn) {
       dispatch(fetchCurrentUser())
@@ -25,7 +31,6 @@ function Dashboard() {
           }
         })
         .catch(() => {
-          user = null;
           toast.error("Failed to authenticate with backend.");
         });
     }
@@ -43,7 +48,18 @@ function Dashboard() {
   return (
     <div>
       <Header></Header>
-      Welcome {user?.firstName}
+      {backendUser ? (
+        <div className="flex items-center gap-4 p-4">
+          <img
+            src={user?.imageUrl}
+            alt="User profile"
+            className="w-12 h-12 rounded-full"
+          />
+          <div>Welcome {backendUser.firstName}</div>
+        </div>
+      ) : (
+        <div>Fetching user details from backend...</div>
+      )}
     </div>
   );
 }
