@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { ChartNoAxesColumnDecreasing } from "lucide-react";
 
 const initialState = {
   isAuthenticated: false,
@@ -8,35 +7,12 @@ const initialState = {
   backendUser: null,
 };
 
-// export const loginUser = createAsyncThunk("/auth/login",
-
-//     async (formData)=>{
-//         const response = await axios.post("/api/user/login",formData)
-//         return response.data;
-//     }
-// )
-
-export const loginuser = createAsyncThunk(
-  "auth/loginUser",
-  async ({ clerkId, email, name, token }, { rejectWithValue }) => {
-    try {
-      const res = await fetch("/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ send Clerk token
-        },
-        body: JSON.stringify({ clerkId, email, name }),
-      });
-
-      const data = await res.json();
-      console.log("loginSliceUSer ::: ", data);
-      return data;
-    } catch (err) {
-      return rejectWithValue(err.message);
-    }
-  }
-);
+// This thunk will now make a GET request to a protected route
+// without passing any user ID from the frontend.
+export const fetchCurrentUser = createAsyncThunk("/auth/currentUser", async () => {
+  const response = await axios.get("/api/user/me");
+  return response.data;
+});
 
 const authSlice = createSlice({
   name: "auth",
@@ -44,10 +20,10 @@ const authSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(loginuser.pending, (state) => {
+      .addCase(fetchCurrentUser.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(loginuser.fulfilled, (state, action) => {
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.isLoading = false;
         if (action.payload.success) {
           state.backendUser = action.payload.user;
@@ -57,11 +33,13 @@ const authSlice = createSlice({
           state.isAuthenticated = false;
         }
       })
-      .addCase(loginuser.rejected, (state, action) => {
+      .addCase(fetchCurrentUser.rejected, (state, action) => {
         state.isLoading = false;
         state.backendUser = null;
         state.isAuthenticated = false;
+        console.error("Failed to fetch user:", action.error.message);
       });
   },
 });
+
 export default authSlice.reducer;
