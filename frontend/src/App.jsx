@@ -10,8 +10,11 @@ import { useSelector } from 'react-redux';
 import { useUser } from '@clerk/clerk-react';
 
 function App() {
-  const { isAuthenticated } = useSelector((state) => state.auth);
   const { isLoaded, isSignedIn } = useUser();
+  const { isAuthenticated, backendUser } = useSelector((state) => state.auth);
+
+  console.log(backendUser);
+  console.log(isAuthenticated);
 
   return (
     <BrowserRouter>
@@ -30,3 +33,6 @@ function App() {
 }
 
 export default App;
+
+
+
