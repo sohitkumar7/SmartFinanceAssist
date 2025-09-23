@@ -13,53 +13,39 @@ function Dashboard() {
   const { isAuthenticated, backendUser } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  useEffect(() => {
-
-    if (isLoaded && !isAuthenticated) {
-      navigate("/");
+    useEffect(() => {
+    // Redirect unauthenticated users to the login page
+    if (isLoaded && !isSignedIn) {
+      toast.error("Login or Make Account First")
+      navigate("/login");
     }
 
-    // Only fetch the user if Clerk has loaded and the user is signed in.
+    // Fetch user data from the backend only if Clerk is ready and the user is signed in
     if (isLoaded && isSignedIn) {
       dispatch(fetchCurrentUser())
-        .unwrap() // Use unwrap() to handle the promise for toast messages
-        .then((data) => {
-          if (data?.success) {
-            toast.success("User Login Successfully");
-          } else {
-            toast.error(data?.message || "User not found in database.");
-          }
-        })
+        .unwrap()
         .catch(() => {
           toast.error("Failed to authenticate with backend.");
         });
     }
-  }, [isLoaded, isSignedIn, dispatch]);
+  }, [isLoaded, isSignedIn, dispatch, navigate]);
 
-  if (!isLoaded) {
+  // This useEffect handles the toast notification for successful login.
+  // It only runs when the backendUser state becomes populated.
+  useEffect(() => {
+    if (backendUser && isAuthenticated) {
+      toast.success("User Login Successfully");
+    }
+  }, [backendUser, isAuthenticated]);
+
+  if (!isLoaded || !isAuthenticated) {
     return <div>Loading user...</div>;
-  }
-
-  if (!isSignedIn) {
-    // This should ideally be handled by a router redirect, but as a fallback:
-    return <div>Please sign in to view the dashboard.</div>;
   }
 
   return (
     <div>
       <Header></Header>
-      {backendUser ? (
-        <div className="flex items-center gap-4 p-4">
-          <img
-            src={user?.imageUrl}
-            alt="User profile"
-            className="w-12 h-12 rounded-full"
-          />
-          <div>Welcome {backendUser.firstName}</div>
-        </div>
-      ) : (
-        <div>Fetching user details from backend...</div>
-      )}
+          
     </div>
   );
 }
