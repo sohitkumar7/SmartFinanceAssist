@@ -8,6 +8,7 @@ import SignupPage from './pages/Authpage/SignupPage.jsx';
 import { Toaster } from 'react-hot-toast'
 import { useSelector } from 'react-redux';
 import { useUser } from '@clerk/clerk-react';
+import NotFoundPage from './pages/notFound/index.jsx';
 
 function App() {
   const { isLoaded, isSignedIn } = useUser();
@@ -26,6 +27,10 @@ function App() {
         {/* You would add other protected routes here similarly */}
         <Route path="/account" element={<Account />} />
         <Route path="/transaction" element={<Transaction />} />
+
+        <Route path="*" element={<NotFoundPage/>}>
+          {" "}
+        </Route>
       </Routes>
       <Toaster/>
     </BrowserRouter>
