@@ -2,20 +2,20 @@ import { useUser } from "@clerk/clerk-react";
 import { fetchCurrentUser } from "../Store/Auth-Slice/index.js";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import Header from "../components/Header.jsx";
 import { useNavigate } from "react-router-dom";
-
+import Dashboardpage from "../pages/Dashboard/dashboardpage.jsx";
+import {BarLoader} from "react-spinners"
 function Dashboard() {
   const { user, isLoaded, isSignedIn } = useUser();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, backendUser } = useSelector((state) => state.auth);
-  
-  useEffect(() => {
 
+  useEffect(() => {
     if (isLoaded && !isSignedIn) {
-      toast.error("Login or Make Account First")
+      toast.error("Login or Make Account First");
       navigate("/login");
       return;
     }
@@ -29,7 +29,6 @@ function Dashboard() {
     }
   }, [isLoaded, isSignedIn, dispatch, navigate, isAuthenticated]);
 
-
   if (!isLoaded || !isAuthenticated) {
     return <div>Loading user...</div>;
   }
@@ -37,18 +36,18 @@ function Dashboard() {
   return (
     <div>
       <Header />
-      {backendUser ? (
-        <div className="flex items-center gap-4 p-4">
-          <img
-            src={user?.imageUrl}
-            alt="User profile"
-            className="w-12 h-12 rounded-full"
-          />
-          <div>Welcome {backendUser.name}</div>
-        </div>
-      ) : (
-        <div>Fetching user details from backend...</div>
-      )}
+      <div>
+        <h1 className="text-5xl font-bold 
+            ml-2
+             text-blue-500ext-5xl   
+              leading-tight tracking-tighter
+              text-transparent bg-clip-text 
+              bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 mb-5">DashBoard</h1>
+      </div>
+
+      <Suspense className="mt-4  w-[100%] color-#9333ea"  fallback={<BarLoader/>}>
+        <Dashboardpage/>
+      </Suspense>
     </div>
   );
 }
