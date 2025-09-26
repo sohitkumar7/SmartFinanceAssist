@@ -6,7 +6,7 @@ import cors from "cors";
 import User from "./models/user.js";
 import { Webhook } from "svix";
 import userRoutes from "./Router/userRouter.js"
-
+import accoutroutes from "./Router/AccountRouter.js"
 
 dotenv.config();
 const app = express();
@@ -111,6 +111,7 @@ app.post(
 app.use(express.json());
 // app.use("/api/user",loginRoute)
 app.use("/api/user", userRoutes);
+app.use("/api/account",accoutroutes);
 
 const PORT = process.env.PORT || 4001;
 app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
