@@ -1,5 +1,7 @@
 import mongoose from "mongoose"
 
+const AccountType = ['Current', 'Saving'];
+
 const AccountSchema = new mongoose.Schema({
     name:{
        type: String,
@@ -15,6 +17,7 @@ const AccountSchema = new mongoose.Schema({
     },
     AccountType: {
         type:String,
+        enum : AccountType,
         required:true,
     },
     userId: {
