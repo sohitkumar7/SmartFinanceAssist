@@ -44,6 +44,7 @@ export const createAccount = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Account Created successfullt",
+      accounts : newAccount
     });
   } catch (error) {
     console.log("error in create accouunt controller",error);
@@ -96,3 +97,5 @@ export const getAccount = async (req, res) => {
     });
   }
 };
+
+
