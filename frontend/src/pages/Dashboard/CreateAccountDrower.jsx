@@ -8,7 +8,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { accountSchema } from "../../lib/form";
 import { Type } from "lucide-react";
@@ -29,7 +29,7 @@ import toast from "react-hot-toast";
 
 function CreateAccountDrower({ children }) {
   const [open, setOpen] = useState(false);
-
+  
   const {
     register,
     handleSubmit,
@@ -46,9 +46,23 @@ function CreateAccountDrower({ children }) {
       isDefault: false,
     },
   });
-
-  const {backendUser} = useSelector((state)=>state.auth);
+  
   const dispatch  = useDispatch();
+  const {backendUser} = useSelector((state)=>state.auth);
+  const {allAccount} = useSelector((state)=>state.Account)
+  
+  useEffect(()=>{
+    
+    dispatch(fetchallAccount({UserId : backendUser._id})).then((data)=>{
+      if(data?.payload?.success){
+        console.log(data);
+      }
+    })
+    console.log(allAccount);
+  },[])
+
+  console.log(allAccount)
+
 
   const onSubmit = async(data)=>{
 
@@ -74,6 +88,9 @@ function CreateAccountDrower({ children }) {
         console.log(data?.payload?.message);
       }
     })
+
+    setOpen(false);
+    reset();
 
   }
 

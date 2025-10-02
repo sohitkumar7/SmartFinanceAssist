@@ -54,8 +54,9 @@ const AccountSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(fetchallAccount.fulfilled, (state, action) => {
-        if (action.payload.success) {
-          state.allAccount = action.payload?.data?.accounts;
+        if (action?.payload?.success) {
+          // console.log(action.payload.accounts)
+          state.allAccount = action.payload?.accounts;
         } else {
           state.allAccount = [];
         }
