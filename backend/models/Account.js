@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const AccountType = ['Current', 'Saving'];
+const AccountType = ['CURRENT', 'SAVING'];
 
 const AccountSchema = new mongoose.Schema({
     name:{

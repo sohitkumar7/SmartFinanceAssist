@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 
 export const createAccount = async (req, res) => {
   try {
-    const { name ,userId, balance, AccountType } = req.body;
+    const { name ,userId, balance, type,isDefault} = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({
@@ -25,7 +25,6 @@ export const createAccount = async (req, res) => {
       });
     }
     
-    let isDefault = false;
     const allAccount = await Account.find({ userId: userObjectId });
 
     if (allAccount.length == 0) {
@@ -36,14 +35,14 @@ export const createAccount = async (req, res) => {
       name,
       userId,
       balance,
-      isDefault: isDefault,
-      AccountType,
+      isDefault,
+      AccountType : type,
     });
 
     await newAccount.save();
     res.status(200).json({
       success: true,
-      message: "Account Created successfullt",
+      message: "Account Created successfully",
       accounts : newAccount
     });
   } catch (error) {

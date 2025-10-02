@@ -23,6 +23,9 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {Button} from "../../components/ui/button.jsx"
+import { useDispatch, useSelector } from "react-redux";
+import { createAccount, fetchallAccount } from "../../Store/Account-Slice/index.js";
+import toast from "react-hot-toast";
 
 function CreateAccountDrower({ children }) {
   const [open, setOpen] = useState(false);
@@ -44,10 +47,34 @@ function CreateAccountDrower({ children }) {
     },
   });
 
+  const {backendUser} = useSelector((state)=>state.auth);
+  const dispatch  = useDispatch();
 
   const onSubmit = async(data)=>{
 
+    console.log(backendUser._id);
     console.log(data);
+    const formData = {
+      ...data,
+      userId : backendUser._id
+    }
+    dispatch(createAccount(formData)).then((data) => {
+      if(data.payload?.success){
+        toast.success("New Account Created");
+      }else{
+        toast.error(data)
+      }
+    })
+    
+    dispatch(fetchallAccount({UserId : backendUser._id})).then((data) =>{
+      if(data?.payload?.success){
+        console.log(data);
+      }
+      else{
+        console.log(data?.payload?.message);
+      }
+    })
+
   }
 
 
