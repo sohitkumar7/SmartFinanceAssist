@@ -12,8 +12,18 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { accountSchema } from "../../lib/form";
 import { Type } from "lucide-react";
-import {Input} from "../../components/ui/input.jsx"
-import { useForm } from "react-hook-form"; 
+import { Input } from "../../components/ui/input.jsx";
+import { useForm } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import {Button} from "../../components/ui/button.jsx"
+
 function CreateAccountDrower({ children }) {
   const [open, setOpen] = useState(false);
 
@@ -34,31 +44,113 @@ function CreateAccountDrower({ children }) {
     },
   });
 
+
+  const onSubmit = async(data)=>{
+
+    console.log(data);
+  }
+
+
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent>
+        
         <DrawerHeader>
           <DrawerTitle>Create new Account</DrawerTitle>
         </DrawerHeader>
 
-        <div>
-            <form >
-                <div>
-                    <label htmlFor="name"> Account Name</label>
-                    <Input
-                        id="name"
-                        placeholder="e.g., Main Checking"
-                        {...register("name")}
-                        />
+        <div className="px-4 pb-4">
+          <form className="space-y-2" onSubmit={handleSubmit(onSubmit)}>
+            
+            <div className="space-y-z mb-6">
+              <label htmlFor="name" className="text-sm font-medium">
+                {" "}
+                Account Name
+              </label>
+              <Input
+                id="name"
+                placeholder="e.g., Main Checking"
+                {...register("name")}
+              />
 
-                        {errors.name && (
-                            <p className="text-sm text-red-500">
-                                {errors.name.message}
-                            </p>
-                        )}
-                </div>
-            </form>
+              {errors.name && (
+                <p className="text-sm text-red-500">{errors.name.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-z mb-6">
+              <label htmlFor="name" className="text-sm font-medium">
+                {" "}
+                Account Type
+              </label>
+
+              <Select
+                onValueChange={(value) => setValue("type", value)}
+                defaultValues={watch("type")}
+              >
+                <SelectTrigger id="type">
+                  <SelectValue
+                    placeholder="Account Type"
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="CURRENT">CURRENT</SelectItem>
+                  <SelectItem value="SAVING">SAVING</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {errors.type && (
+                <p className="text-sm text-red-500">{errors.type.message}</p>
+              )}
+            </div>
+            <div className="space-y-z mb-6">
+              <label htmlFor="name" className="text-sm font-medium">
+                {" "}
+                Initial Balance
+              </label>
+              <Input
+                id="balance"
+                type="number"
+                step="0.01"
+                placeholder="0"
+                {...register("balance")}
+              />
+
+              {errors.name && (
+                <p className="text-sm text-red-500">{errors.name.message}</p>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between rounded-lg border p-3 mb-6">
+              <div className="space-y-0.5 ">
+                <label htmlFor="isDefault" className=" cursor-pointer text-sm font-medium">
+                  {" "}
+                  Set as Default
+                </label>
+
+                <p className="text-sm text-muted-foreground">This Account will be selected as Default</p>
+              </div>
+              <Switch
+                id="isDefault"
+                onCheckedChange={(checked) => setValue("isDefault", checked)}
+                checked={watch("isDefault")}
+              />
+            </div>
+
+            <div className="flex gap-4 pt-4 mb-3">
+              <DrawerClose asChild>
+                <Button type="button" variant="outline" className="flex-1" > 
+                  Cancel
+                </Button>
+              </DrawerClose>
+ 
+                <Button type="submit" className="flex-1">
+                Create Account
+                </Button>
+
+            </div>
+          </form>
         </div>
       </DrawerContent>
     </Drawer>

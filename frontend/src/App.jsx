@@ -14,8 +14,8 @@ function App() {
   const { isLoaded, isSignedIn } = useUser();
   const { isAuthenticated, backendUser } = useSelector((state) => state.auth);
 
-  console.log(backendUser);
-  console.log(isAuthenticated);
+  // console.log(backendUser);
+  // console.log(isAuthenticated);
 
   return (
     <BrowserRouter>
