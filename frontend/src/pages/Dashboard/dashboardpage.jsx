@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CreateAccountDrower from "./CreateAccountDrower";
 import { Card, CardContent } from "../../components/ui/card";
 import { Plus } from "lucide-react";
-
+import {useSelector,useDispatch} from "react-redux"
+import AccountCard from "./AccountCard";
+import { fetchallAccount } from "../../Store/Account-Slice";
 function Dashboardpage() {
+   const dispatch  = useDispatch();
+   const {allAccount} = useSelector((state)=>state.Account)
+
+   console.log(allAccount)
+
   return (
     <div className="px-5">
       {/* budget progress */}
@@ -22,6 +29,10 @@ function Dashboardpage() {
           </Card>
         </CreateAccountDrower>
 
+        {allAccount?.length > 0 && 
+        allAccount?.map((account) => {
+          return <AccountCard key={account._id} account={account}></AccountCard>;
+        })}
         
       </div>
     </div>

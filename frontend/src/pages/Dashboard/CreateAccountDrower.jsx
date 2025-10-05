@@ -52,7 +52,6 @@ function CreateAccountDrower({ children }) {
   const {allAccount} = useSelector((state)=>state.Account)
   
   useEffect(()=>{
-    
     dispatch(fetchallAccount({UserId : backendUser._id})).then((data)=>{
       if(data?.payload?.success){
         console.log(data);
