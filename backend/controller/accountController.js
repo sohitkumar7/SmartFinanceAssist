@@ -26,16 +26,16 @@ export const createAccount = async (req, res) => {
     }
     
     const allAccount = await Account.find({ userId: userObjectId });
-
+    let isdefault = isDefault;
     if (allAccount.length == 0) {
-      isDefault = true;
+      isdefault = true;
     }
 
     const newAccount = new Account({
       name,
       userId,
       balance,
-      isDefault,
+      isDefault : isdefault,
       AccountType : type,
     });
 

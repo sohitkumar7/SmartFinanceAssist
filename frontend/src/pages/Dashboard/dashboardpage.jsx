@@ -1,16 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 import CreateAccountDrower from "./CreateAccountDrower";
 import { Card, CardContent } from "../../components/ui/card";
 import { Plus } from "lucide-react";
-import {useSelector,useDispatch} from "react-redux"
+import { useSelector } from "react-redux";
 import AccountCard from "./AccountCard";
-import { fetchallAccount } from "../../Store/Account-Slice";
+
 function Dashboardpage() {
-   const dispatch  = useDispatch();
-   const {allAccount} = useSelector((state)=>state.Account)
-
-   console.log(allAccount)
-
+  const { allAccount } = useSelector((state) => state.Account);
+  // console.log(allAccount)
   return (
     <div className="px-5">
       {/* budget progress */}
@@ -29,11 +26,17 @@ function Dashboardpage() {
           </Card>
         </CreateAccountDrower>
 
-        {allAccount?.length > 0 && 
-        allAccount?.map((account) => {
-          return <AccountCard key={account._id} account={account}></AccountCard>;
-        })}
-        
+        {allAccount?.length > 0
+          ? allAccount.map((account) => {
+              return (
+                <AccountCard key={account._id} account={account}></AccountCard>
+              );
+            })
+          :  (
+              <p className="col-span-3 text-gray-500 italic pt-5">
+                No accounts found. Create one above.
+              </p>
+            )}
       </div>
     </div>
   );

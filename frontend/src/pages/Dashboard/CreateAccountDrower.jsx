@@ -8,7 +8,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { accountSchema } from "../../lib/form";
 import { Type } from "lucide-react";
@@ -22,14 +22,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import {Button} from "../../components/ui/button.jsx"
+import { Button } from "../../components/ui/button.jsx";
 import { useDispatch, useSelector } from "react-redux";
-import { createAccount, fetchallAccount } from "../../Store/Account-Slice/index.js";
+import {
+  createAccount,
+  fetchallAccount,
+} from "../../Store/Account-Slice/index.js";
 import toast from "react-hot-toast";
 
 function CreateAccountDrower({ children }) {
   const [open, setOpen] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -46,66 +49,44 @@ function CreateAccountDrower({ children }) {
       isDefault: false,
     },
   });
-  
-  const dispatch  = useDispatch();
-  const {backendUser} = useSelector((state)=>state.auth);
-  const {allAccount} = useSelector((state)=>state.Account)
-  
-  useEffect(()=>{
-    dispatch(fetchallAccount({UserId : backendUser._id})).then((data)=>{
-      if(data?.payload?.success){
-        console.log(data);
-      }
-    })
-    console.log(allAccount);
-  },[])
 
-  console.log(allAccount)
+  const { backendUser } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
-
-  const onSubmit = async(data)=>{
-
-    console.log(backendUser._id);
-    console.log(data);
+  const onSubmit = async (data) => {
     const formData = {
       ...data,
-      userId : backendUser._id
-    }
+      userId: backendUser._id,
+    };
     dispatch(createAccount(formData)).then((data) => {
-      if(data.payload?.success){
+      if (data.payload?.success) {
         toast.success("New Account Created");
-      }else{
-        toast.error(data)
+      } else {
+        toast.error(data);
       }
-    })
-    
-    dispatch(fetchallAccount({UserId : backendUser._id})).then((data) =>{
-      if(data?.payload?.success){
-        console.log(data);
-      }
-      else{
-        console.log(data?.payload?.message);
-      }
-    })
+    });
 
+    // dispatch(fetchallAccount({ UserId: backendUser._id })).then((data) => {
+    //   if (data?.payload?.success) {
+    //     console.log(data);
+    //   } else {
+    //     console.log(data?.payload?.message);
+    //   }
+    // });
     setOpen(false);
     reset();
-
-  }
-
+  };
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent>
-        
         <DrawerHeader>
           <DrawerTitle>Create new Account</DrawerTitle>
         </DrawerHeader>
 
         <div className="px-4 pb-4">
           <form className="space-y-2" onSubmit={handleSubmit(onSubmit)}>
-            
             <div className="space-y-z mb-6">
               <label htmlFor="name" className="text-sm font-medium">
                 {" "}
@@ -133,9 +114,7 @@ function CreateAccountDrower({ children }) {
                 defaultValues={watch("type")}
               >
                 <SelectTrigger id="type">
-                  <SelectValue
-                    placeholder="Account Type"
-                  />
+                  <SelectValue placeholder="Account Type" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="CURRENT">CURRENT</SelectItem>
@@ -167,12 +146,17 @@ function CreateAccountDrower({ children }) {
 
             <div className="flex items-center justify-between rounded-lg border p-3 mb-6">
               <div className="space-y-0.5 ">
-                <label htmlFor="isDefault" className=" cursor-pointer text-sm font-medium">
+                <label
+                  htmlFor="isDefault"
+                  className=" cursor-pointer text-sm font-medium"
+                >
                   {" "}
                   Set as Default
                 </label>
 
-                <p className="text-sm text-muted-foreground">This Account will be selected as Default</p>
+                <p className="text-sm text-muted-foreground">
+                  This Account will be selected as Default
+                </p>
               </div>
               <Switch
                 id="isDefault"
@@ -183,15 +167,14 @@ function CreateAccountDrower({ children }) {
 
             <div className="flex gap-4 pt-4 mb-3">
               <DrawerClose asChild>
-                <Button type="button" variant="outline" className="flex-1" > 
+                <Button type="button" variant="outline" className="flex-1">
                   Cancel
                 </Button>
               </DrawerClose>
- 
-                <Button type="submit" className="flex-1">
-                Create Account
-                </Button>
 
+              <Button type="submit" className="flex-1">
+                Create Account
+              </Button>
             </div>
           </form>
         </div>

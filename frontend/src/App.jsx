@@ -21,8 +21,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home/>} />
-        <Route path="/login" element={<LoginPage/>} />
-        <Route path="/signup" element={<SignupPage/>} />
+        <Route path="/login/*" element={<LoginPage/>} />
+        <Route path="/signup/*" element={<SignupPage/>} />
         <Route path="/dashboard" element={<Dashboard />} />
         {/* You would add other protected routes here similarly */}
         <Route path="/account" element={<Account />} />

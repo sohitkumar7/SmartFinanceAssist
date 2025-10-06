@@ -37,7 +37,8 @@ const AccountSlice = createSlice({
       })
       .addCase(createAccount.fulfilled, (state, action) => {
         if (action.payload.success) {
-          state.allAccount.push(action.payload.data);
+          console.log(action?.payload)
+          state.allAccount.push(action.payload.accounts);
         }
 
         state.isLoading = false;
