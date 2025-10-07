@@ -66,19 +66,12 @@ function CreateAccountDrower({ children }) {
       }
     });
 
-    // dispatch(fetchallAccount({ UserId: backendUser._id })).then((data) => {
-    //   if (data?.payload?.success) {
-    //     console.log(data);
-    //   } else {
-    //     console.log(data?.payload?.message);
-    //   }
-    // });
     setOpen(false);
     reset();
   };
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={ setOpen}>
       <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
