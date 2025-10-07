@@ -137,27 +137,6 @@ function CreateAccountDrower({ children }) {
               )}
             </div>
 
-            <div className="flex items-center justify-between rounded-lg border p-3 mb-6">
-              <div className="space-y-0.5 ">
-                <label
-                  htmlFor="isDefault"
-                  className=" cursor-pointer text-sm font-medium"
-                >
-                  {" "}
-                  Set as Default
-                </label>
-
-                <p className="text-sm text-muted-foreground">
-                  This Account will be selected as Default
-                </p>
-              </div>
-              <Switch
-                id="isDefault"
-                onCheckedChange={(checked) => setValue("isDefault", checked)}
-                checked={watch("isDefault")}
-              />
-            </div>
-
             <div className="flex gap-4 pt-4 mb-3">
               <DrawerClose asChild>
                 <Button type="button" variant="outline" className="flex-1">
