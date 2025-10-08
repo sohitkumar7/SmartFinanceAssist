@@ -23,7 +23,7 @@ function AccountCard({ account }) {
 
   function handlechange() {
     if (account.isDefault) {
-      toast.error("Account is already default. Select Another Account to change.");
+      toast.error("You need atleast 1  Default Account ");
       return;
     }
 
@@ -55,7 +55,7 @@ function AccountCard({ account }) {
   const navigate = useNavigate();
   return (
     <Card
-      // onClick={()=>navigate(`/account/${_id}`)}
+      onClick={()=>navigate(`/account/${_id}`)}
       className="hover:shadow-md transition-shadow group relative"
     >
       {/* <Link href={`/account/${_id}`}> */}

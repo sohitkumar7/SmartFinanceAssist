@@ -7,6 +7,7 @@ import User from "./models/user.js";
 import { Webhook } from "svix";
 import userRoutes from "./Router/userRouter.js"
 import accoutroutes from "./Router/AccountRouter.js"
+import transactionRoute from "./Router/transactionRoute.js"
 
 dotenv.config();
 const app = express();
@@ -38,8 +39,6 @@ if (!webhookSecret) {
 
 app.post(
   "/api/webhooks/register",
-  // This middleware is crucial. It captures the raw body of the request
-  // as a Buffer, which is what Svix needs for signature verification.
   express.raw({ type: "application/json" }),
   async (req, res) => {
     // Check for a raw body. If express.raw() failed, this will be missing.
@@ -56,7 +55,7 @@ app.post(
       // The verify method takes the raw payload buffer and the headers
       evt = wh.verify(payload, headers);
     } catch (err) {
-      console.error("❌ Webhook verification failed:", err.message);
+      console.error("Webhook verification failed:", err.message);
       return res.status(400).json({ error: "Invalid webhook signature or payload." });
     }
 
@@ -79,19 +78,17 @@ app.post(
               name: `${first_name} ${last_name}`,
             });
             await user.save();
-            console.log("✅ New user saved to MongoDB:", user.clerkId);
+            console.log(" New user saved to MongoDB:", user.clerkId);
           }
           else{
             console.log("❕ User with this email already exists:", email);
-            // It's not an error from the webhook perspective, so we don't send an error status.
-            // Returning a 200 OK prevents retries from Clerk.
             return res.status(200).json({ success: true, message: "User already exists with this email." });
           }
           break;
         }
         case "user.deleted": {
           await User.deleteOne({ clerkId: data.id });
-          console.log("✅ User deleted from MongoDB:", data.id);
+          console.log(" User deleted from MongoDB:", data.id);
           break;
         }
         default:
@@ -101,7 +98,7 @@ app.post(
 
       res.status(200).json({ message: "User synced with MongoDB" });
     } catch (dbError) {
-      console.error("❌ Database operation failed:", dbError);
+      console.error("Database operation failed:", dbError);
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
@@ -110,6 +107,7 @@ app.post(
 // Standard JSON middleware for other routes (if any)
 app.use(express.json());
 // app.use("/api/user",loginRoute)
+app.use("/api/transaction",transactionRoute)
 app.use("/api/user", userRoutes);
 app.use("/api/account",accoutroutes);
 

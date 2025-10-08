@@ -1,9 +1,17 @@
-import React from 'react'
+import React from "react";
+import { useParams } from "react-router-dom";
+import Header from "./Header";
 
 function Account() {
+  const params = useParams();
+  const accountId = params.accountId;
   return (
-    <div>Account</div>
-  )
+    <>
+      <Header />
+
+      <div>{params.accountId}</div>
+    </>
+  );
 }
 
-export default Account
+export default Account;

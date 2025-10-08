@@ -25,7 +25,7 @@ function App() {
         <Route path="/signup/*" element={<SignupPage/>} />
         <Route path="/dashboard" element={<Dashboard />} />
         {/* You would add other protected routes here similarly */}
-        <Route path="/account" element={<Account />} />
+        <Route path="/account/:accountId" element={<Account/>} />
         <Route path="/transaction" element={<Transaction />} />
 
         <Route path="*" element={<NotFoundPage/>}>
