@@ -11,31 +11,45 @@ import {
 import { Switch } from "../../components/ui/switch.jsx";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { makeoneDefault } from "../../Store/Account-Slice/index.js";
+import { fetchallAccount, makeoneDefault } from "../../Store/Account-Slice/index.js";
 
 function AccountCard({ account }) {
   const dispatch = useDispatch();
-  
-  function handlechange(){
-    
-    // if (account.isDefault) {
-    //   console.log("Account is already default. Cannot toggle off.");
-    //   return; 
-    // }
-    
-    console.log(account._id)
+    const { backendUser } = useSelector((state) => state.auth);
+
+  console.log(account);
+
+  function handlechange() {
+    if (account.isDefault) {
+      toast.error("Account is already default. Select Another Account to change.");
+      return;
+    }
+
+    console.log(account._id);
     // console.log("handlechange");
 
-    // dispatch(makeoneDefault({ accountId: account._id })).then((data) => {
-    //   if (data?.payload?.success) {
-    //     toast.success("Defaut account change");
-    //   } else {
-    //     toast.error("error in changing default Account");
-    //   }
-    // });
-  };
+    dispatch(makeoneDefault({ accountId: account._id })).then((data) => {
+      if (data?.payload?.success) {
+        toast.success("Defaut account change");
+      } else {
+        toast.error("error in changing default Account");
+      }
+    });
+
+    dispatch(fetchallAccount({ UserId: backendUser._id })).then(
+      (data) => {
+        if (data?.payload?.success) {
+          // console.log(data);
+        } else {
+          toast.error("Failed to load Accounts");
+        }
+      }
+    );
+
+    window.location.reload();
+  }
 
   const { name, AccountType, balance, _id, isDefault } = account;
   const navigate = useNavigate();
@@ -52,8 +66,8 @@ function AccountCard({ account }) {
         </CardTitle>
         <Switch
           // disabled={isDefault}
-          // checked={isDefault}
-          onChange={handlechange}
+          checked={isDefault}
+          onClick={handlechange}
         />
       </CardHeader>
 

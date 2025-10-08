@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import Dashboardpage from "../pages/Dashboard/dashboardpage.jsx";
 import { BarLoader } from "react-spinners";
 import { fetchallAccount } from "../Store/Account-Slice/index.js";
+import { Loader2 } from "lucide-react";
+
 function Dashboard() {
   const { user, isLoaded, isSignedIn } = useUser();
   const dispatch = useDispatch();
@@ -32,8 +34,8 @@ function Dashboard() {
               (data) => {
                 if (data?.payload?.success) {
                   // console.log(data);
-                }else{
-                  toast.error("Failed to load Accounts")
+                } else {
+                  toast.error("Failed to load Accounts");
                 }
               }
             );
@@ -48,10 +50,13 @@ function Dashboard() {
   }, [isLoaded, isSignedIn, dispatch, navigate, isAuthenticated]);
 
   if (!isLoaded || !isAuthenticated) {
-    return <div>Loading user...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen w-full">
+        <Loader2 className="h-8 w-8 text-indigo-600 animate-spin mb-3" />
+        <p className="text-indigo-600 font-medium">Loading...</p>
+      </div>
+    );
   }
-
-  // console.log("backendUser",backendUser)
 
   return (
     <div>
