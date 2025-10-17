@@ -51,3 +51,24 @@ export const createTransation = async(req, res) => {
         });
     }
 };
+
+
+export const fetchAllTransaction  = async(req,res) => {
+    try{
+
+        const {accountId} = req.params;
+        const allTransaction = await Transaction.find({accountId});
+
+        return res.status(200).json({
+            success:true,
+            allTransction : allTransaction,
+        })
+
+    }catch(error){
+        console.log(error);
+        res.status(500).json({
+            success:false,
+            message : "error in fetching allTranaction controller"
+        })
+    }
+}
