@@ -5,6 +5,7 @@ import reducer from "../Account-Slice";
 const initialState = {
     allTransaction : [],
     isLoading : false,
+    TotalTransaction : 0,
 }
 
 export const createTransaction = createAsyncThunk("/create/transaction",
@@ -15,8 +16,9 @@ export const createTransaction = createAsyncThunk("/create/transaction",
 )
 
 export const fetchAllTransaction = createAsyncThunk("/get/all/Transaction", 
-    async(accountId)=>{
+    async({accountId})=>{
         const response = await axios.get(`/api/transaction/get/all/${accountId}`)
+        console.log("response",response);
         return response.data;
     })
 
@@ -45,7 +47,9 @@ const transactionSlice = createSlice({
             state.isLoading = true;
         }).addCase(fetchAllTransaction.fulfilled, (state,action) =>{
             state.isLoading = false;
-            state.allTransaction = action?.payload?.data?.allTransction; 
+            console.log(action?.payload)
+            state.TotalTransaction = action?.payload?.allTransction?.length;
+            state.allTransaction = action?.payload?.allTransction; 
         })
 
     }

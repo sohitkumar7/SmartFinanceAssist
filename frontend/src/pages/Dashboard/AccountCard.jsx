@@ -19,7 +19,7 @@ function AccountCard({ account }) {
   const dispatch = useDispatch();
     const { backendUser } = useSelector((state) => state.auth);
 
-  console.log(account);
+  // console.log(account);
 
   function handlechange() {
     if (account.isDefault) {
@@ -27,7 +27,7 @@ function AccountCard({ account }) {
       return;
     }
 
-    console.log(account._id);
+    // console.log(account._id);
     // console.log("handlechange");
 
     dispatch(makeoneDefault({ accountId: account._id })).then((data) => {
@@ -55,7 +55,7 @@ function AccountCard({ account }) {
   const navigate = useNavigate();
   return (
     <Card
-      onClick={()=>navigate(`/account/${_id}`)}
+      onClick={()=>navigate(`/account/${_id}`,{ state: { account } })}
       className="hover:shadow-md transition-shadow group relative"
     >
       {/* <Link href={`/account/${_id}`}> */}

@@ -57,8 +57,9 @@ export const fetchAllTransaction  = async(req,res) => {
     try{
 
         const {accountId} = req.params;
+        console.log("accountId" ,accountId);
         const allTransaction = await Transaction.find({accountId});
-
+        console.log("transection",allTransaction);
         return res.status(200).json({
             success:true,
             allTransction : allTransaction,
