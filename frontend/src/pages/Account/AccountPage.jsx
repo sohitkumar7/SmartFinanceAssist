@@ -1,7 +1,10 @@
-import React, { useEffect } from "react";
-import {useDispatch} from "react-redux"
+import React, { Suspense, useEffect } from "react";
+import {useDispatch, useSelector} from "react-redux"
 import { fetchAllTransaction } from "../../Store/Transaction-Slice";
 import toast from "react-hot-toast";
+import Transactiontable from "./Transactiontable";
+import { BarLoader } from "react-spinners";
+
 function AccountPage({ account }) {
   console.log(account._id);
 
@@ -19,7 +22,11 @@ function AccountPage({ account }) {
     })
   },[])
 
+  const {allTransaction,TotalTransaction} = useSelector((state)=>state.Transaction)
+  console.log(allTransaction);
+
   return (
+    <>
     <div className="  m-5 space-y-8 px-5 flex gap-4 items-end justify-between">
       <div>
         <h1 className=" text-5xl sm:text-6xl font-bold tracking-tight capitalize bg-clip-text text-transparent bg-gradient-to-r from-[#6f00ff] to-[#A16EE7]">
@@ -32,13 +39,20 @@ function AccountPage({ account }) {
 
       <div className="text-right pb-2">
         <div className="text-xl sm:text-2xl font-bold"> ₹{parseFloat(account.balance).toFixed(2)}</div>
-        <p className="text-sm text-mited-foreground" >Transactions</p>
+        <p className="text-sm text-mited-foreground" >{TotalTransaction} Transactions</p>
+      </div>
+        
       </div>
 
       {/* Chart Section */}
-
+      
       {/* Transaction Table */}
+      <div className="m-5 space-y-8 px-5">
+      <Suspense fallback={<BarLoader className="mt-4" width ={"100%"} color="#9333ea"/>}>
+        <Transactiontable Transactions = {allTransaction}/>
+      </Suspense>
     </div>
+    </>
   );
 }
 
