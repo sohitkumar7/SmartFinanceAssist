@@ -9,11 +9,11 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import { Checkbox } from "../../components/ui/checkbox";
+import { categoryColors } from "./data.js";
 
 function Transactiontable({ Transactions }) {
-  // console.log(Transactions);
+  console.log(Transactions);
   const filterAndSordtedTransaction = Transactions;
-
 
   const handleSort = () => {};
 
@@ -27,7 +27,6 @@ function Transactiontable({ Transactions }) {
           {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
           <TableHeader>
             <TableRow>
-
               <TableHead className="w-[50px]">
                 <Checkbox />
               </TableHead>
@@ -49,7 +48,7 @@ function Transactiontable({ Transactions }) {
               </TableHead>
 
               <TableHead
-                className="cursor-pointer"
+                className="cursor-pointer text-right"
                 onClick={() => handleSort("amount")}
               >
                 <div className="flex-items-center justify-end">Amount</div>
@@ -61,24 +60,51 @@ function Transactiontable({ Transactions }) {
           </TableHeader>
 
           <TableBody>
-          {filterAndSordtedTransaction.length === 0? (
-          <TableRow>
-          <TableCell
-            colSpan={7}
-              className="text-center text-muted-foreground">
-          No Transactions Found
-        </TableCell>
-</TableRow>
-) 8 ©
-<TableRow>
-<TableCell className="font-medium" >INV@@1</TableCel1>
-<TableCell>Paid</TableCell>
-<TableCell>Credit Card</TableCell>
-<TableCell className="text-right">$250.00</TableCell>
-</TableRow>
-uy
-</TableBody>
+            {Transactions.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="text-center text-muted-foreground"
+                >
+                  No Transactions Found
+                </TableCell>
+              </TableRow>
+            ) : (
+              Transactions.map((transaction) => (
+                <TableRow key={transaction._id}>
+                  <TableCell>
+                    <Checkbox />
+                  </TableCell>
+                  <TableCell>
+                    {new Date(transaction.date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </TableCell>
+                  <TableCell>{transaction.description}</TableCell>
+                  <TableCell className="capitalize">
+                    <span
+                      className="px-2 py-1 rounded text-black text-sm"
+                      style={{
+                      //   background: categoryColors[transaction.category],
+                        background: categoryColors["groceries"],
 
+                      }}
+                    >
+                      {transaction.category}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right font-medium" style={{
+                    color: transaction.type === "EXPENSE" ? "red" : "green", 
+                  }}>
+                    {transaction.type === 'EXPENSE' ? "-" : "+" }
+                    ₹{transaction.amount}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
         </Table>
       </div>
     </div>

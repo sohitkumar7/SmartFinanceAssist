@@ -18,7 +18,7 @@ export const createTransaction = createAsyncThunk("/create/transaction",
 export const fetchAllTransaction = createAsyncThunk("/get/all/Transaction", 
     async({accountId})=>{
         const response = await axios.get(`/api/transaction/get/all/${accountId}`)
-        console.log("response",response);
+        // console.log("response",response);
         return response.data;
     })
 
@@ -47,7 +47,7 @@ const transactionSlice = createSlice({
             state.isLoading = true;
         }).addCase(fetchAllTransaction.fulfilled, (state,action) =>{
             state.isLoading = false;
-            console.log(action?.payload)
+            // console.log(action?.payload)
             state.TotalTransaction = action?.payload?.allTransction?.length;
             state.allTransaction = action?.payload?.allTransction; 
         })

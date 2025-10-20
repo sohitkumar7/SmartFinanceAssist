@@ -6,7 +6,7 @@ import Transactiontable from "./Transactiontable";
 import { BarLoader } from "react-spinners";
 
 function AccountPage({ account }) {
-  console.log(account._id);
+  // console.log(account._id);
 
   const dispatch = useDispatch();
 
@@ -17,13 +17,13 @@ function AccountPage({ account }) {
         toast.error("Error in Fetching All Transaction")
       }
       else{
-        console.log("allTransaction Fetched Successfully");
+        // console.log("allTransaction Fetched Successfully");
       }
     })
   },[])
 
   const {allTransaction,TotalTransaction} = useSelector((state)=>state.Transaction)
-  console.log(allTransaction);
+  // console.log(allTransaction);
 
   return (
     <>
