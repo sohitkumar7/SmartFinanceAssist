@@ -10,6 +10,21 @@ import {
 } from "../../components/ui/table";
 import { Checkbox } from "../../components/ui/checkbox";
 import { categoryColors } from "./data.js";
+import { Badge, Clock } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../../components/ui/tooltip.jsx";
+import { Button } from "../../components/ui/button.jsx";
+import { format } from "date-fns";
+
+const RECURRING_INTERVALS = {
+  DAILY: "Dily",
+  WEEKLY: "Weekly",
+  MONTHLY: "Monthly",
+  YEARLY: "Yearly",
+};
 
 function Transactiontable({ Transactions }) {
   console.log(Transactions);
@@ -87,19 +102,53 @@ function Transactiontable({ Transactions }) {
                     <span
                       className="px-2 py-1 rounded text-black text-sm"
                       style={{
-                      //   background: categoryColors[transaction.category],
+                        //   background: categoryColors[transaction.category],
                         background: categoryColors["groceries"],
-
                       }}
                     >
                       {transaction.category}
                     </span>
                   </TableCell>
-                  <TableCell className="text-right font-medium" style={{
-                    color: transaction.type === "EXPENSE" ? "red" : "green", 
-                  }}>
-                    {transaction.type === 'EXPENSE' ? "-" : "+" }
-                    ₹{transaction.amount}
+                  <TableCell
+                    className="text-right font-medium"
+                    style={{
+                      color: transaction.type === "EXPENSE" ? "red" : "green",
+                    }}
+                  >
+                    {transaction.type === "EXPENSE" ? "-" : "+"}₹
+                    {transaction.amount}
+                  </TableCell>
+
+                  <TableCell>
+                    {transaction.isRecurring ? (
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            _
+                            className="gap-1 bg-purple-100 text-purple-700 hover:bg-purple-200"
+                          >
+                            <Clock className="h-3 w-3"></Clock>
+                            {RECURRING_INTERVALS[transaction.recurringInterval]}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="text-sm">
+                            <div>Next Date:</div>
+                            <div>
+                              {format(
+                                new Date(transaction.nextRecurringDate),
+                                "PPpp"
+                              )}
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <Button>
+                        <Clock className="h-3 w-3"></Clock>
+                        One-Time
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))
