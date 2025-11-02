@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -10,7 +10,13 @@ import {
 } from "../../components/ui/table";
 import { Checkbox } from "../../components/ui/checkbox";
 import { categoryColors } from "./data.js";
-import { Badge, Clock } from "lucide-react";
+import {
+  Badge,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  MoreHorizontal,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -18,6 +24,15 @@ import {
 } from "../../components/ui/tooltip.jsx";
 import { Button } from "../../components/ui/button.jsx";
 import { format } from "date-fns";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu.jsx";
+import { useNavigate } from "react-router-dom";
 
 const RECURRING_INTERVALS = {
   DAILY: "Dily",
@@ -27,10 +42,23 @@ const RECURRING_INTERVALS = {
 };
 
 function Transactiontable({ Transactions }) {
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [sortConfig, setSortConfig] = useState({
+    field: "date",
+    direction: "desc",
+  });
+
   console.log(Transactions);
   const filterAndSordtedTransaction = Transactions;
+  const navigate = useNavigate();
 
-  const handleSort = () => {};
+  const handleSort = (field) => {
+    setSortConfig((current) => ({
+      field,
+      direction:
+        current.field == field && current.direction === "asc" ? "desc" : "asc",
+    }));
+  };
 
   return (
     <div>
@@ -50,7 +78,15 @@ function Transactiontable({ Transactions }) {
                 className="cursor-pointer"
                 onClick={() => handleSort("date")}
               >
-                <div className="flex-items-center">Date</div>
+                <div className="flex-items-center">
+                  Date
+                  {sortConfig.field === "date" &&
+                    (sortConfig.direction === "asc" ? (
+                      <ChevronUp></ChevronUp>
+                    ) : (
+                      <ChevronDown></ChevronDown>
+                    ))}
+                </div>
               </TableHead>
 
               <TableHead>Description</TableHead>
@@ -149,6 +185,33 @@ function Transactiontable({ Transactions }) {
                         One-Time
                       </Button>
                     )}
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4"> </MoreHorizontal>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel
+                          onClick={() =>
+                            navigate(
+                              `/transaction/create/edit/${transaction._id}`
+                            )
+                          }
+                        >
+                          Edit
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          // onClick={()=>deletefn([transaction._id])}
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))
