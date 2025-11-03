@@ -16,6 +16,9 @@ import {
   ChevronUp,
   Clock,
   MoreHorizontal,
+  Search,
+  Trash,
+  X,
 } from "lucide-react";
 import {
   Tooltip,
@@ -33,6 +36,14 @@ import {
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu.jsx";
 import { useNavigate } from "react-router-dom";
+import { Input } from "../..//components/ui/input.jsx";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../..//components/ui/select.jsx";
 
 const RECURRING_INTERVALS = {
   DAILY: "Dily",
@@ -42,15 +53,18 @@ const RECURRING_INTERVALS = {
 };
 
 function Transactiontable({ Transactions }) {
+  const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState([]);
   const [sortConfig, setSortConfig] = useState({
     field: "date",
     direction: "desc",
   });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [typeFiter, setTypeFilter] = useState("");
+  const [recurringFilter, setRecurringFilter] = useState("");
 
   console.log(Transactions);
   const filterAndSordtedTransaction = Transactions;
-  const navigate = useNavigate();
 
   const handleSort = (field) => {
     setSortConfig((current) => ({
@@ -60,7 +74,6 @@ function Transactiontable({ Transactions }) {
     }));
   };
 
-  
   const handleSelect = (id) => {
     setSelectedIds((current) =>
       current.includes(id)
@@ -69,21 +82,83 @@ function Transactiontable({ Transactions }) {
     );
   };
 
-  // console.log(selectedIds,"selectedIds");
-
   const handleSelectAll = () => {
-     setSelectedIds((current) =>
-      current.length === Transactions.length 
+    setSelectedIds((current) =>
+      current.length === Transactions.length
         ? []
-        : Transactions.map((transaction) => 
-          transaction._id
-        )
+        : Transactions.map((transaction) => transaction._id)
     );
-  }; 
+  };
+
+  const handleBulkDelete = () => {};
+
+  const handleClearFilters = () => {
+    setRecurringFilter("");
+    setSearchTerm("")
+    setTypeFilter("");
+    setSelectedIds([]);
+  };
 
   return (
     <div>
       {/* filters */}
+
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            className="pl-8"
+            placeholder="Search Transactions..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <div className="flex gap-2">
+          <Select value={typeFiter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="w-[130px]">
+              <SelectValue placeholder="All Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Income">Income</SelectItem>
+              <SelectItem value="Expense">Expense</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={recurringFilter}
+            onValueChange={(value) => setRecurringFilter(value)}
+          >
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="All Transaction" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="recurring">Recurring-Only</SelectItem>
+              <SelectItem value="non-recurring">Non-Recurring-Only</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {selectedIds.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Button variant="destructive" onClick={handleBulkDelete}>
+                <Trash className="h-4 w-4 mr-2"></Trash>
+                Deleted Selected({selectedIds.length})
+              </Button>
+            </div>
+          )}
+
+          {(searchTerm || typeFiter || recurringFilter || selectedIds.length > 0) && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleClearFilters}
+              title="Clear Filters"
+            >
+              <X className="h-4 w-5" />
+            </Button>
+          )}
+        </div>
+      </div>
 
       {/* Transaction */}
       <div className="rounded-md border">
@@ -92,9 +167,12 @@ function Transactiontable({ Transactions }) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]">
-                <Checkbox  
-                  onCheckedChange={()=>handleSelectAll()}
-                  checked={selectedIds.length === Transactions.length && Transactions.length > 0}
+                <Checkbox
+                  onCheckedChange={() => handleSelectAll()}
+                  checked={
+                    selectedIds.length === Transactions.length &&
+                    Transactions.length > 0
+                  }
                 />
               </TableHead>
 
@@ -170,9 +248,10 @@ function Transactiontable({ Transactions }) {
               Transactions.map((transaction) => (
                 <TableRow key={transaction._id}>
                   <TableCell>
-                    <Checkbox 
-                      onCheckedChange={()=> handleSelect(transaction._id)}
-                  checked={selectedIds.includes(transaction._id)}/>
+                    <Checkbox
+                      onCheckedChange={() => handleSelect(transaction._id)}
+                      checked={selectedIds.includes(transaction._id)}
+                    />
                   </TableCell>
                   <TableCell>
                     {new Date(transaction.date).toLocaleDateString("en-US", {
