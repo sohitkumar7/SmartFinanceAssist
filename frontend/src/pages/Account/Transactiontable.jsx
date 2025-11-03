@@ -60,6 +60,27 @@ function Transactiontable({ Transactions }) {
     }));
   };
 
+  
+  const handleSelect = (id) => {
+    setSelectedIds((current) =>
+      current.includes(id)
+        ? current.filter((item) => item != id)
+        : [...current, id]
+    );
+  };
+
+  // console.log(selectedIds,"selectedIds");
+
+  const handleSelectAll = () => {
+     setSelectedIds((current) =>
+      current.length === Transactions.length 
+        ? []
+        : Transactions.map((transaction) => 
+          transaction._id
+        )
+    );
+  }; 
+
   return (
     <div>
       {/* filters */}
@@ -71,21 +92,26 @@ function Transactiontable({ Transactions }) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]">
-                <Checkbox />
+                <Checkbox  
+                  onCheckedChange={()=>handleSelectAll()}
+                  checked={selectedIds.length === Transactions.length && Transactions.length > 0}
+                />
               </TableHead>
 
               <TableHead
                 className="cursor-pointer"
                 onClick={() => handleSort("date")}
               >
-                <div className="flex-items-center">
+                <div className="flex items-center">
                   Date
-                  {sortConfig.field === "date" &&
-                    (sortConfig.direction === "asc" ? (
-                      <ChevronUp></ChevronUp>
-                    ) : (
-                      <ChevronDown></ChevronDown>
-                    ))}
+                  <div>
+                    {sortConfig.field === "date" &&
+                      (sortConfig.direction === "asc" ? (
+                        <ChevronUp className="ml-1 h-4 w-4 "></ChevronUp>
+                      ) : (
+                        <ChevronDown className="m1-1 h-4 w-4"></ChevronDown>
+                      ))}
+                  </div>
                 </div>
               </TableHead>
 
@@ -95,14 +121,34 @@ function Transactiontable({ Transactions }) {
                 className="cursor-pointer"
                 onClick={() => handleSort("category")}
               >
-                <div className="flex-items-center">Category</div>
+                <div className="flex items-center">
+                  Category
+                  <div>
+                    {sortConfig.field === "category" &&
+                      (sortConfig.direction === "asc" ? (
+                        <ChevronUp className="ml-1 h-4 w-4"></ChevronUp>
+                      ) : (
+                        <ChevronDown className="m1-1 h-4 w-4"></ChevronDown>
+                      ))}
+                  </div>
+                </div>
               </TableHead>
 
               <TableHead
                 className="cursor-pointer text-right"
                 onClick={() => handleSort("amount")}
               >
-                <div className="flex-items-center justify-end">Amount</div>
+                <div className="flex items-center justify-end">
+                  Amount
+                  <div>
+                    {sortConfig.field === "amount" &&
+                      (sortConfig.direction === "asc" ? (
+                        <ChevronUp className="ml-1 h-4 w-4 "></ChevronUp>
+                      ) : (
+                        <ChevronDown className="m1-1 h-4 w-4"></ChevronDown>
+                      ))}
+                  </div>
+                </div>
               </TableHead>
 
               <TableHead>Reccuring</TableHead>
@@ -124,7 +170,9 @@ function Transactiontable({ Transactions }) {
               Transactions.map((transaction) => (
                 <TableRow key={transaction._id}>
                   <TableCell>
-                    <Checkbox />
+                    <Checkbox 
+                      onCheckedChange={()=> handleSelect(transaction._id)}
+                  checked={selectedIds.includes(transaction._id)}/>
                   </TableCell>
                   <TableCell>
                     {new Date(transaction.date).toLocaleDateString("en-US", {
@@ -188,7 +236,7 @@ function Transactiontable({ Transactions }) {
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
-                      <DropdownMenuTrigger>
+                      <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
                           <MoreHorizontal className="h-4 w-4"> </MoreHorizontal>
                         </Button>
