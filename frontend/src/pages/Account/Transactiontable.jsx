@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -64,7 +64,51 @@ function Transactiontable({ Transactions }) {
   const [recurringFilter, setRecurringFilter] = useState("");
 
   console.log(Transactions);
-  const filterAndSordtedTransaction = Transactions;
+
+  const filterAndSordtedTransaction = useMemo(() => {
+    let result = [...Transactions];
+
+    if (searchTerm) {
+      const seachLower = searchTerm.toLowerCase();
+      result = result.filter((transaction) =>
+        transaction.description?.toLowerCase().includes(seachLower)
+      );
+    }
+
+    if (recurringFilter) {
+      result = result.filter((transaction) => {
+        if (recurringFilter == "recurring") return transaction.isRecurring;
+        return !transaction.isRecurring;
+      });
+    }
+
+    if (typeFiter) {
+      result = result.filter((transaction) => transaction.type === typeFiter);
+    }
+
+    result.sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortConfig.field) {
+        case "date":
+          comparison = new Date(a.date) - new Date(b.date);
+          break;
+        case "amount":
+          comparison = a.amount - b.amount;
+          break;
+        case "category":
+          comparison = a.category.localeCompare(b.category);
+          break;
+        default:
+          comparison = 0;
+      }
+
+      return sortConfig.direction === "asc" ? comparison : -comparison;
+    });
+    
+
+    return result;
+  }, [Transactions, searchTerm, typeFiter, recurringFilter, sortConfig]);
 
   const handleSort = (field) => {
     setSortConfig((current) => ({
@@ -94,7 +138,7 @@ function Transactiontable({ Transactions }) {
 
   const handleClearFilters = () => {
     setRecurringFilter("");
-    setSearchTerm("")
+    setSearchTerm("");
     setTypeFilter("");
     setSelectedIds([]);
   };
@@ -120,8 +164,8 @@ function Transactiontable({ Transactions }) {
               <SelectValue placeholder="All Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Income">Income</SelectItem>
-              <SelectItem value="Expense">Expense</SelectItem>
+              <SelectItem value="INCOME">Income</SelectItem>
+              <SelectItem value="EXPENSE">Expense</SelectItem>
             </SelectContent>
           </Select>
 
@@ -147,7 +191,10 @@ function Transactiontable({ Transactions }) {
             </div>
           )}
 
-          {(searchTerm || typeFiter || recurringFilter || selectedIds.length > 0) && (
+          {(searchTerm ||
+            typeFiter ||
+            recurringFilter ||
+            selectedIds.length > 0) && (
             <Button
               variant="outline"
               size="icon"
@@ -160,7 +207,9 @@ function Transactiontable({ Transactions }) {
         </div>
       </div>
 
+      {/* -------------------------------------------------------------- */}
       {/* Transaction */}
+
       <div className="rounded-md border">
         <Table>
           {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
@@ -235,7 +284,7 @@ function Transactiontable({ Transactions }) {
           </TableHeader>
 
           <TableBody>
-            {Transactions.length === 0 ? (
+            {filterAndSordtedTransaction.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={7}
@@ -245,7 +294,7 @@ function Transactiontable({ Transactions }) {
                 </TableCell>
               </TableRow>
             ) : (
-              Transactions.map((transaction) => (
+              filterAndSordtedTransaction.map((transaction) => (
                 <TableRow key={transaction._id}>
                   <TableCell>
                     <Checkbox
