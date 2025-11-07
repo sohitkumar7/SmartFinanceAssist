@@ -44,6 +44,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../..//components/ui/select.jsx";
+import { useDispatch } from "react-redux";
+import { DeletTransaction, fetchAllTransaction } from "../../Store/Transaction-Slice/index.js";
 
 const RECURRING_INTERVALS = {
   DAILY: "Dily",
@@ -52,7 +54,10 @@ const RECURRING_INTERVALS = {
   YEARLY: "Yearly",
 };
 
-function Transactiontable({ Transactions }) {
+function Transactiontable({ accountId , Transactions }) {
+
+  // console.log(accountId);
+
   const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -62,8 +67,10 @@ function Transactiontable({ Transactions }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFiter, setTypeFilter] = useState("");
   const [recurringFilter, setRecurringFilter] = useState("");
+  const dispatch = useDispatch();
 
-  console.log(Transactions);
+
+  // console.log(Transactions);
 
   const filterAndSordtedTransaction = useMemo(() => {
     let result = [...Transactions];
@@ -134,7 +141,13 @@ function Transactiontable({ Transactions }) {
     );
   };
 
-  const handleBulkDelete = () => {};
+  const handleBulkDelete = () => {
+    const formdata  = {
+      selectedIds,
+      accountId
+    }
+    dispatch(DeletTransaction(formdata))
+  };
 
   const handleClearFilters = () => {
     setRecurringFilter("");

@@ -49,7 +49,7 @@ function AccountPage({ account }) {
       {/* Transaction Table */}
       <div className="m-5 space-y-8 px-5">
       <Suspense fallback={<BarLoader className="mt-4" width ={"100%"} color="#9333ea"/>}>
-        <Transactiontable Transactions = {allTransaction}/>
+        <Transactiontable accountId = {account._id} Transactions = {allTransaction}/>
       </Suspense>
     </div>
     </>
