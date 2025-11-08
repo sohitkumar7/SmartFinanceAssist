@@ -46,6 +46,7 @@ import {
 } from "../..//components/ui/select.jsx";
 import { useDispatch } from "react-redux";
 import { DeletTransaction, fetchAllTransaction } from "../../Store/Transaction-Slice/index.js";
+import toast from "react-hot-toast";
 
 const RECURRING_INTERVALS = {
   DAILY: "Dily",
@@ -146,10 +147,29 @@ function Transactiontable({ accountId , Transactions }) {
       selectedIds,
       accountId
     }
-    dispatch(DeletTransaction(formdata))
+    dispatch(DeletTransaction(formdata)).then((data)=>{
+      if(data?.payload?.success){
+        toast.success("Transaction Deleted Successfully")
+      }
+    })
     setSelectedIds([])
 
   };
+   const deletefn = (id) => {
+    const formdata  = {
+      selectedIds : [id],
+      accountId
+    }
+    dispatch(DeletTransaction(formdata)).then((data)=>{
+      if(data?.payload?.success){
+        toast.success("Transaction Deleted Successfully")
+      }
+    })
+    setSelectedIds([])
+
+  };
+
+  deletefn
 
   const handleClearFilters = () => {
     setRecurringFilter("");
@@ -199,7 +219,7 @@ function Transactiontable({ accountId , Transactions }) {
 
           {selectedIds.length > 0 && (
             <div className="flex items-center gap-2">
-              <Button variant="destructive" onClick={handleBulkDelete}>
+              <Button variant="destructive"  onClick={handleBulkDelete} >
                 <Trash className="h-4 w-4 mr-2"></Trash>
                 Deleted Selected({selectedIds.length})
               </Button>
@@ -385,7 +405,7 @@ function Transactiontable({ accountId , Transactions }) {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuLabel
+                        <DropdownMenuItem
                           onClick={() =>
                             navigate(
                               `/transaction/create/edit/${transaction._id}`
@@ -393,11 +413,11 @@ function Transactiontable({ accountId , Transactions }) {
                           }
                         >
                           Edit
-                        </DropdownMenuLabel>
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="text-destructive"
-                          // onClick={()=>deletefn([transaction._id])}
+                          onClick={()=>deletefn([transaction._id])}
                         >
                           Delete
                         </DropdownMenuItem>

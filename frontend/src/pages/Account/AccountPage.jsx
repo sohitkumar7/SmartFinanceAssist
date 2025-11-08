@@ -45,6 +45,8 @@ function AccountPage({ account }) {
       </div>
 
       {/* Chart Section */}
+
+      
       
       {/* Transaction Table */}
       <div className="m-5 space-y-8 px-5">
