@@ -147,6 +147,8 @@ function Transactiontable({ accountId , Transactions }) {
       accountId
     }
     dispatch(DeletTransaction(formdata))
+    setSelectedIds([])
+
   };
 
   const handleClearFilters = () => {

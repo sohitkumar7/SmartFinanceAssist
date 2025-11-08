@@ -6,6 +6,7 @@ const initialState = {
   allTransaction: [],
   isLoading: false,
   TotalTransaction: 0,
+  updatedBalance : 0,
 };
 
 export const createTransaction = createAsyncThunk(
@@ -51,6 +52,7 @@ const transactionSlice = createSlice({
       .addCase(createTransaction.fulfilled, (state, action) => {
         isLoading = false;
         allTransaction = action?.payload?.data?.data;
+        state.updatedBalance = action?.payload?.updatedBalance
       })
 
       .addCase(fetchAllTransaction.pending, (state) => {
@@ -64,6 +66,7 @@ const transactionSlice = createSlice({
         // console.log(action?.payload)
         state.TotalTransaction = action?.payload?.allTransction?.length;
         state.allTransaction = action?.payload?.allTransction;
+        state.updatedBalance = action?.payload?.updatedBalance
       })
 
       .addCase(DeletTransaction.pending, (state) => {
@@ -74,9 +77,11 @@ const transactionSlice = createSlice({
       })
       .addCase(DeletTransaction.fulfilled, (state, action) => {
         state.isLoading = false;
-        // console.log(action?.payload)
         state.TotalTransaction = action?.payload?.allTransction?.length;
         state.allTransaction = action?.payload?.allTransction;
+        
+        console.log(action?.payload?.updatedBalance)
+        state.updatedBalance = action?.payload?.updatedBalance
       })
 
 

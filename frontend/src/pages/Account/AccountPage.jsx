@@ -22,7 +22,7 @@ function AccountPage({ account }) {
     })
   },[])
 
-  const {allTransaction,TotalTransaction} = useSelector((state)=>state.Transaction)
+  const {allTransaction,TotalTransaction,updatedBalance} = useSelector((state)=>state.Transaction)
   // console.log(allTransaction);
 
   return (
@@ -38,7 +38,7 @@ function AccountPage({ account }) {
       </div>
 
       <div className="text-right pb-2">
-        <div className="text-xl sm:text-2xl font-bold"> ₹{parseFloat(account.balance).toFixed(2)}</div>
+        <div className="text-xl sm:text-2xl font-bold"> ₹{parseFloat(updatedBalance).toFixed(2)}</div>
         <p className="text-sm text-mited-foreground" >{TotalTransaction} Transactions</p>
       </div>
         
