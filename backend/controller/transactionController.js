@@ -139,8 +139,6 @@ export const deleteAllTransaction = async (req, res) => {
         message: "selected ids size is 0",
       });
     }
-
-    // ✅ Validate accountId format
     if (!mongoose.Types.ObjectId.isValid(accountId)) {
       return res.status(400).json({
         success: false,
@@ -150,7 +148,6 @@ export const deleteAllTransaction = async (req, res) => {
 
     const accountObjectId = new mongoose.Types.ObjectId(accountId);
 
-    // ✅ Find account
     const account = await Account.findById(accountObjectId);
     if (!account) {
       return res.status(404).json({

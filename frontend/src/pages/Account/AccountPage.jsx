@@ -4,6 +4,7 @@ import { fetchAllTransaction } from "../../Store/Transaction-Slice";
 import toast from "react-hot-toast";
 import Transactiontable from "./Transactiontable";
 import { BarLoader } from "react-spinners";
+import AccountChart from "./AccountChart";
 
 function AccountPage({ account }) {
   // console.log(account._id);
@@ -45,6 +46,10 @@ function AccountPage({ account }) {
       </div>
 
       {/* Chart Section */}
+
+       <Suspense fallback={<BarLoader className="mt-4" width ={"100%"} color="#9333ea"/>}>
+        <AccountChart accountId = {account._id} Transactions = {allTransaction}/>
+      </Suspense>
 
       
       
