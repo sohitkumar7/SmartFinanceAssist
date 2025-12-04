@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const budgetSchea = new mongoose.Schema({
 
-    amout:{
+    amount:{
         type:Number,
     },
     lastAlertSent:{
@@ -11,7 +11,6 @@ const budgetSchea = new mongoose.Schema({
     userId:{
         type:String,
         required:true,
-
     },
 
 },{timestamps:true})
