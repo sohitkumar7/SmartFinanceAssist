@@ -40,7 +40,7 @@ const BudgetSlice = createSlice({
         state.isLoading = false;
       })
 
-      addCase(fetchBudget.pending, (state) => {
+      .addCase(fetchBudget.pending, (state) => {
         state.isLoading = true;
       })
       .addCase(fetchBudget.fulfilled, (state, action) => {
@@ -57,3 +57,5 @@ const BudgetSlice = createSlice({
 
   },
 });
+
+export default BudgetSlice.reducer;

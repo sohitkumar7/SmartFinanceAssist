@@ -52,6 +52,7 @@ function AccountCard({ account }) {
   }
 
   const { name, AccountType, balance, _id, isDefault } = account;
+  
   const navigate = useNavigate();
   return (
     <Card
