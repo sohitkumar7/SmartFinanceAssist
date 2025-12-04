@@ -8,6 +8,7 @@ import { Webhook } from "svix";
 import userRoutes from "./Router/userRouter.js"
 import accoutroutes from "./Router/AccountRouter.js"
 import transactionRoute from "./Router/transactionRoute.js"
+import BudgetRouter from "./Router/bugetRouter.js";
 
 dotenv.config();
 const app = express();
@@ -110,6 +111,7 @@ app.use(express.json());
 app.use("/api/transaction",transactionRoute)
 app.use("/api/user", userRoutes);
 app.use("/api/account",accoutroutes);
+app.use("/api/Budget",BudgetRouter)
 
 const PORT = process.env.PORT || 4001;
 app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
