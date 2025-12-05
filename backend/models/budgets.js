@@ -8,7 +8,7 @@ const budgetSchea = new mongoose.Schema({
     lastAlertSent:{
         type:Date,
     },
-    userId:{
+    AccountId:{
         type:String,
         required:true,
     },

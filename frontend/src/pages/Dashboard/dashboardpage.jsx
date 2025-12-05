@@ -21,7 +21,7 @@ function Dashboardpage() {
   let budgetData = null;
   useEffect(() => {
   if (DefaultAccount) {
-    dispatch(fetchBudget(DefaultAccount.userId));
+    dispatch(fetchBudget(DefaultAccount._id));
   }
 }, [DefaultAccount, dispatch]);
 
@@ -31,6 +31,8 @@ function Dashboardpage() {
   return (
     <div className="px-5">
       {/* budget progress */}
+
+
 
       {/* overview */}
 

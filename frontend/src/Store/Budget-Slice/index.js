@@ -14,8 +14,8 @@ export const createBudget = createAsyncThunk(
   }
 );
 
-export const fetchBudget = createAsyncThunk("/Fetch/budget", async (userId) => {
-  const response = await axios.get(`/api/Budget/fetchBudget/${userId}`);
+export const fetchBudget = createAsyncThunk("/Fetch/budget", async (AccountId) => {
+  const response = await axios.get(`/api/Budget/fetchBudget/${AccountId}`);
   return response.data;
 });
 

@@ -3,9 +3,11 @@ import Budget from "../models/budgets.js";
 
 export const fetchBudget = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { AccountId } = req.params;
+    // console.log(AccountId)
 
-    const budget = await Budget.findOne({ userId });
+    const budget = await Budget.findOne({ AccountId : AccountId});
+    // console.log(budget);
 
     if (!budget) {
       return res.status(404).json({
@@ -32,9 +34,9 @@ export const fetchBudget = async (req, res) => {
 
 export const createBudet = async (req, res) => {
   try {
-    const { userId, amount } = req.body;
+    const { AccountId, amount } = req.body;
 
-    let budget = await Budget.findOne({ userId });
+    let budget = await Budget.findOne({ AccountId });
 
     if (budget) {
       // Update existing budget
@@ -50,7 +52,7 @@ export const createBudet = async (req, res) => {
 
     // Create new budget
     budget = new Budget({
-      userId,
+      AccountId,
       amount,
     });
 
