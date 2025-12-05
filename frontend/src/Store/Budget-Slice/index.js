@@ -2,13 +2,15 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const initialState = {
-  budgetAmount: 0,
+  budgetAmount: null,
   isLoading: true,
+  currentMonthExpenses : 0,
+  remaining : null
 };
 
 export const createBudget = createAsyncThunk(
   "/create/update/budget",
-  async ({ formData }) => {
+  async ( formData ) => {
     const response = await axios.post("/api/Budget/Upsert", formData);
     return response.data;
   }
@@ -46,7 +48,9 @@ const BudgetSlice = createSlice({
       .addCase(fetchBudget.fulfilled, (state, action) => {
         state.isLoading = false;
         if (action?.payload?.success) {
-          state.budgetAmount = action?.payload?.data.amount;
+          state.budgetAmount = action?.payload?.data?.budget?.amount;
+          state.currentMonthExpenses = action?.payload?.data?.currentMonthExpenses;
+          state.remaining = action?.payload?.data?.remaining;
         } else {
           state.budgetAmount = 0;
         }

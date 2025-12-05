@@ -6,17 +6,18 @@ import { useDispatch, useSelector } from "react-redux";
 import AccountCard from "./AccountCard";
 import { fetchBudget } from "../../Store/Budget-Slice";
 import toast from "react-hot-toast";
+import BudgetProgrress from "../../components/BudgetProgrress";
 
 function Dashboardpage() {
   const { allAccount } = useSelector((state) => state.Account);
-  const { budgetAmount } = useSelector((state) => state.budget);
+  const { budgetAmount,currentMonthExpenses,remaining} = useSelector((state) => state.budget);
   const dispatch = useDispatch();
 
   // console.log(allAccount)
 
   const DefaultAccount = allAccount.find((acc) => acc.isDefault === true);
 
-  console.log("DefaultAccount",DefaultAccount);
+  // console.log("DefaultAccount",DefaultAccount);
 
   let budgetData = null;
   useEffect(() => {
@@ -26,13 +27,15 @@ function Dashboardpage() {
 }, [DefaultAccount, dispatch]);
 
 
-  console.log("budgetAmount",budgetAmount)
+  // console.log("budgetAmount",remaining)
 
   return (
     <div className="px-5">
       {/* budget progress */}
 
-
+      {DefaultAccount && <BudgetProgrress DefaultAccount={DefaultAccount} />
+        
+    }
 
       {/* overview */}
 

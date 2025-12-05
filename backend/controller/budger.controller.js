@@ -1,12 +1,13 @@
 import Account from "../models/Account.js";
 import Budget from "../models/budgets.js";
+import Transaction from "../models/transaction.js";
 
 export const fetchBudget = async (req, res) => {
   try {
     const { AccountId } = req.params;
     // console.log(AccountId)
 
-    const budget = await Budget.findOne({ AccountId : AccountId});
+    const budget = await Budget.findOne({ AccountId: AccountId });
     // console.log(budget);
 
     if (!budget) {
@@ -16,11 +17,36 @@ export const fetchBudget = async (req, res) => {
       });
     }
 
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+   
+    const expensesAgg = await Transaction.aggregate([
+      {
+        $match: {
+          accountId: AccountId, 
+          type: "EXPENSE",
+          date: { $gte: startOfMonth, $lte: endOfMonth },
+        },
+      },
+      {
+        $group: { _id: null, total: { $sum: "$amount" } },
+      },
+    ]);
+
+    const totalExpenses = expensesAgg.length > 0 ? expensesAgg[0].total : 0;
+
     return res.status(200).json({
       success: true,
       message: "Budget fetched successfully",
-      data: budget,
+      data: {
+        budget,
+        currentMonthExpenses: totalExpenses,
+        remaining: budget.amount - totalExpenses,
+      },
     });
+
 
   } catch (error) {
     console.error("Error in budget controller:", error);
@@ -63,7 +89,6 @@ export const createBudet = async (req, res) => {
       message: "Budget created successfully",
       data: budget,
     });
-
   } catch (error) {
     console.error("Error in create budget controller:", error);
     return res.status(500).json({
