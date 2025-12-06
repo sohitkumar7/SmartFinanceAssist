@@ -12,6 +12,7 @@ import { Button } from "./ui/button";
 import { Check, Pencil, X } from "lucide-react";
 import { createBudget } from "../Store/Budget-Slice/index.js";
 import toast from "react-hot-toast";
+import {Progress} from "../components/ui/progress.jsx"
 
 function BudgetProgrress({DefaultAccount}) {
 
@@ -30,6 +31,13 @@ function BudgetProgrress({DefaultAccount}) {
 
 
   const handleUpdateBudget = async () => {
+
+    if(newBudget <= 0){
+        toast.error("Please Enter a Valid Budget")
+         setIsEditing(false);
+         setNewBudget(null)
+        return;
+    }
     
     console.log("handlebudget updated is runnning")
     const formData = {
@@ -39,11 +47,16 @@ function BudgetProgrress({DefaultAccount}) {
 
     console.log(formData)
 
-    dispatch(createBudget(formData)).then((data) => {
+
+    await dispatch(createBudget(formData)).then((data) => {
         if(data?.payload?.success){
             toast.success("Budget Updated Successfully")
         }
-    }) 
+    })
+
+     setIsEditing(false);
+    
+    
   };
 
   const handleCancel = () => {
@@ -52,7 +65,7 @@ function BudgetProgrress({DefaultAccount}) {
   };
 
   return (
-    <Card>
+    <Card >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="flex-1">
           <CardTitle className="text-sm font-medium">
@@ -81,7 +94,7 @@ function BudgetProgrress({DefaultAccount}) {
                 <Button
                   variant="ghost"
                   size="icon"
-                //   onClick={handleCancel}
+                  onClick={handleCancel}
                 //   disabled={isLoading}
                 >
                   <X className="h-4 w-4 text-red-500" />
@@ -109,7 +122,7 @@ function BudgetProgrress({DefaultAccount}) {
         </div>
       </CardHeader>
       <CardContent>
-        {/* {initialBudget && (
+        {budgetAmount && (
           <div className="space-y-2">
             <Progress
               value={percentUsed}
@@ -126,7 +139,7 @@ function BudgetProgrress({DefaultAccount}) {
               {percentUsed.toFixed(1)}% used
             </p>
           </div>
-        )} */}
+        )}
       </CardContent>
     </Card>
   );

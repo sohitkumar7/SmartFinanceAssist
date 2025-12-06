@@ -30,12 +30,12 @@ function Dashboardpage() {
   // console.log("budgetAmount",remaining)
 
   return (
-    <div className="px-5">
+    <div className="space-y-8 m-10">
       {/* budget progress */}
 
-      {DefaultAccount && <BudgetProgrress DefaultAccount={DefaultAccount} />
+        {DefaultAccount && <BudgetProgrress DefaultAccount={DefaultAccount} />
         
-    }
+      }
 
       {/* overview */}
 

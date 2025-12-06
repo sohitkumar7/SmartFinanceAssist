@@ -35,7 +35,7 @@ const BudgetSlice = createSlice({
         if (action?.payload?.success) {
           state.budgetAmount = action?.payload?.data.amount;
         } else {
-          state.budgetAmount = 0;
+          state.budgetAmount = null;
         }
       })
       .addCase(createBudget.rejected, (state) => {
@@ -52,7 +52,7 @@ const BudgetSlice = createSlice({
           state.currentMonthExpenses = action?.payload?.data?.currentMonthExpenses;
           state.remaining = action?.payload?.data?.remaining;
         } else {
-          state.budgetAmount = 0;
+          state.budgetAmount = null;
         }
       })
       .addCase(fetchBudget.rejected, (state) => {

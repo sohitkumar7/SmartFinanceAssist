@@ -59,27 +59,32 @@ function Dashboard() {
   }
 
   return (
-    <div>
+    <div className="">
+
       <Header />
-      <div>
+ 
+
+      <div className="ml-8 mt-5">
         <h1
           className="text-5xl font-bold 
-            ml-2
+            ml-1
              text-blue-500ext-5xl   
               leading-tight tracking-tighter
               text-transparent bg-clip-text 
-              bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 mb-5"
+              bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600"
         >
           DashBoard
         </h1>
       </div>
 
-      <Suspense
-        className="mt-4  w-[100%] color-#9333ea"
-        fallback={<BarLoader />}
-      >
-        <Dashboardpage />
-      </Suspense>
+      <div>
+        <Suspense
+          className="mt-4  w-[100%] color-#9333ea"
+          fallback={<BarLoader />}
+        >
+          <Dashboardpage />
+        </Suspense>
+      </div>
     </div>
   );
 }
