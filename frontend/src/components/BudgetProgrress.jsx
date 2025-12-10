@@ -19,6 +19,9 @@ function BudgetProgrress({DefaultAccount}) {
   const { budgetAmount, currentMonthExpenses, remaining } = useSelector(
     (state) => state.budget
   );
+  const {backendUser} = useSelector((state)=>state.auth);
+
+  console.log(backendUser);
 
   const [isEditing, setIsEditing] = useState(false);
   const [newBudget, setNewBudget] = useState(budgetAmount);
@@ -42,10 +45,11 @@ function BudgetProgrress({DefaultAccount}) {
     console.log("handlebudget updated is runnning")
     const formData = {
         AccountId : DefaultAccount._id,
-        amount: newBudget
+        amount: newBudget,
+        userId: backendUser._id
     }
 
-    console.log(formData)
+    console.log(formData,"formData")
 
 
     await dispatch(createBudget(formData)).then((data) => {

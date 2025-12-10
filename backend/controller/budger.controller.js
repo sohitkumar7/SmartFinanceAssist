@@ -60,7 +60,7 @@ export const fetchBudget = async (req, res) => {
 
 export const createBudet = async (req, res) => {
   try {
-    const { AccountId, amount } = req.body;
+    const { AccountId, amount, userId } = req.body;
 
     let budget = await Budget.findOne({ AccountId });
 
@@ -80,6 +80,7 @@ export const createBudet = async (req, res) => {
     budget = new Budget({
       AccountId,
       amount,
+      userId
     });
 
     await budget.save();
