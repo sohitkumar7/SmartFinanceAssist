@@ -40,7 +40,6 @@ function Dashboardpage() {
       {/* overview */}
 
       {/* Account grid */}
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <CreateAccountDrower>
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
