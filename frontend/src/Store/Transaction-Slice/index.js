@@ -50,8 +50,8 @@ const transactionSlice = createSlice({
         state.allTransaction = [];
       })
       .addCase(createTransaction.fulfilled, (state, action) => {
-        isLoading = false;
-        allTransaction = action?.payload?.data?.data;
+        state.isLoading = false;
+        state.allTransaction = action?.payload?.data?.data;
         state.updatedBalance = action?.payload?.updatedBalance
       })
 

@@ -45,7 +45,10 @@ import {
   SelectValue,
 } from "../..//components/ui/select.jsx";
 import { useDispatch } from "react-redux";
-import { DeletTransaction, fetchAllTransaction } from "../../Store/Transaction-Slice/index.js";
+import {
+  DeletTransaction,
+  fetchAllTransaction,
+} from "../../Store/Transaction-Slice/index.js";
 import toast from "react-hot-toast";
 
 const RECURRING_INTERVALS = {
@@ -55,8 +58,7 @@ const RECURRING_INTERVALS = {
   YEARLY: "Yearly",
 };
 
-function Transactiontable({ accountId , Transactions }) {
-
+function Transactiontable({ accountId, Transactions }) {
   // console.log(accountId);
 
   const navigate = useNavigate();
@@ -69,7 +71,6 @@ function Transactiontable({ accountId , Transactions }) {
   const [typeFiter, setTypeFilter] = useState("");
   const [recurringFilter, setRecurringFilter] = useState("");
   const dispatch = useDispatch();
-
 
   // console.log(Transactions);
 
@@ -113,7 +114,6 @@ function Transactiontable({ accountId , Transactions }) {
 
       return sortConfig.direction === "asc" ? comparison : -comparison;
     });
-    
 
     return result;
   }, [Transactions, searchTerm, typeFiter, recurringFilter, sortConfig]);
@@ -143,33 +143,37 @@ function Transactiontable({ accountId , Transactions }) {
   };
 
   const handleBulkDelete = () => {
-    const formdata  = {
+    const formdata = {
       selectedIds,
-      accountId
-    }
-    dispatch(DeletTransaction(formdata)).then((data)=>{
-      if(data?.payload?.success){
-        toast.success("Transaction Deleted Successfully")
+      accountId,
+    };
+    dispatch(DeletTransaction(formdata)).then((data) => {
+      if (data?.payload?.success) {
+        toast.success("Transaction Deleted Successfully");
       }
-    })
-    setSelectedIds([])
-
+    });
+    setSelectedIds([]);
   };
-   const deletefn = (id) => {
-    const formdata  = {
-      selectedIds : [id],
-      accountId
-    }
-    dispatch(DeletTransaction(formdata)).then((data)=>{
-      if(data?.payload?.success){
-        toast.success("Transaction Deleted Successfully")
+  const deletefn = (id) => {
+    const formdata = {
+      selectedIds: [id],
+      accountId,
+    };
+    dispatch(DeletTransaction(formdata)).then((data) => {
+      if (data?.payload?.success) {
+        toast.success("Transaction Deleted Successfully");
       }
-    })
-    setSelectedIds([])
-
+    });
+    setSelectedIds([]);
   };
 
-  deletefn
+  const safeDate = (d) => {
+    if (!d) return null;
+    const date = new Date(d);
+    return isNaN(date.getTime()) ? null : date;
+  };
+
+  deletefn;
 
   const handleClearFilters = () => {
     setRecurringFilter("");
@@ -219,7 +223,7 @@ function Transactiontable({ accountId , Transactions }) {
 
           {selectedIds.length > 0 && (
             <div className="flex items-center gap-2">
-              <Button variant="destructive"  onClick={handleBulkDelete} >
+              <Button variant="destructive" onClick={handleBulkDelete}>
                 <Trash className="h-4 w-4 mr-2"></Trash>
                 Deleted Selected({selectedIds.length})
               </Button>
@@ -382,10 +386,12 @@ function Transactiontable({ accountId , Transactions }) {
                           <div className="text-sm">
                             <div>Next Date:</div>
                             <div>
-                              {format(
-                                new Date(transaction.nextRecurringDate),
-                                "PPpp"
-                              )}
+                              {safeDate(transaction.nextRecurringDate)
+                                ? format(
+                                    safeDate(transaction.nextRecurringDate),
+                                    "PPpp"
+                                  )
+                                : "No Recurring Date"}
                             </div>
                           </div>
                         </TooltipContent>
@@ -417,7 +423,7 @@ function Transactiontable({ accountId , Transactions }) {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="text-destructive"
-                          onClick={()=>deletefn([transaction._id])}
+                          onClick={() => deletefn([transaction._id])}
                         >
                           Delete
                         </DropdownMenuItem>

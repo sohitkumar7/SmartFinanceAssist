@@ -23,7 +23,7 @@ function Header() {
         <div className="flex justify-center items-center gap-2 p-1">
           <SignedIn>
             <Button
-              onClick={() => navigate("/transaction/create")}
+              onClick={() => navigate("/transaction")}
               className="bg-white text-black hover:bg-white"
             >
               <PenBox size={18} />
