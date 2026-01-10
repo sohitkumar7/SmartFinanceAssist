@@ -157,3 +157,41 @@ export const makeOneDefault = async (req, res) => {
     });
   }
 };
+
+export const deleteAccount = async (req, res) => {
+  try {
+    const { accountId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(accountId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Account ID format.",
+      });
+    }
+
+    const account = await Account.findById(accountId);
+
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found.",
+      });
+    }
+
+    await Account.findByIdAndDelete(accountId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Account deleted successfully.",  
+      accountId,
+    });
+
+  } catch (error) {
+    console.log("Error in deleteAccount controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};

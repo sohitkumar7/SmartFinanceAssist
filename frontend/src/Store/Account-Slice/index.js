@@ -29,6 +29,20 @@ export const makeoneDefault = createAsyncThunk(
     return response.data;
   }
 );
+
+export const deleteAccount = createAsyncThunk(
+  "/delete/account",
+  async ({ accountId }, thunkAPI) => {
+    try {
+      const response = await axios.delete(`/api/account/delete/${accountId}`);
+      return { ...response.data, accountId }; // send id back to reducer
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || "Error");
+    }
+  }
+);
+
+
 const AccountSlice = createSlice({
   name: "Accountt",
   initialState,
@@ -82,7 +96,24 @@ const AccountSlice = createSlice({
         }
 
         state.isLoading = false;
-      });
+      })
+      
+      .addCase(deleteAccount.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteAccount.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(deleteAccount.fulfilled, (state, action) => {
+        if (action.payload?.success) {
+          state.allAccount = state.allAccount.filter(
+            (acc) => acc._id !== action.payload.accountId
+          );
+        }
+        state.isLoading = false;
+      })
+
+
   },
 });
 

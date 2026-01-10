@@ -15,7 +15,7 @@ function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, backendUser } = useSelector((state) => state.auth);
-
+  console.log(backendUser)
   const { allAccount } = useSelector((state) => state.Account);
 
   useEffect(() => {

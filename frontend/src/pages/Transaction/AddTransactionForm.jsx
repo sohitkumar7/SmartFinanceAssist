@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createTransaction } from "../../Store/Transaction-Slice/index.js";
-import { toast } from "react-hot-toast";  
+import { toast } from "react-hot-toast";
 import { defaultCategories } from "../Account/data.js";
 import { useNavigate } from "react-router-dom";
-
+import { Button } from "../../components/ui/button.jsx";
+import axios from "axios";
 
 function AddTransactionForm() {
   const dispatch = useDispatch();
@@ -22,7 +23,7 @@ function AddTransactionForm() {
     receiptUrl: "",
     isRecurring: false,
     status: "COMPLETED",
-    date: new Date().toISOString().split("T")[0], 
+    date: new Date().toISOString().split("T")[0],
   });
 
   const handleChange = (e) => {
@@ -34,37 +35,119 @@ function AddTransactionForm() {
   };
 
   const handleSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!defaultAccount) {
-    toast.error("No default account found!");
-    return;
-  }
+    if (!defaultAccount) {
+      toast.error("No default account found!");
+      return;
+    }
 
- 
-  const dateObj = new Date(form.date);
-  dateObj.setUTCHours(8, 0, 0, 0);
+    const dateObj = new Date(form.date);
+    dateObj.setUTCHours(8, 0, 0, 0);
 
-  const dataToSend = {
-    ...form,
-    amount: String(form.amount),
-    userId: backendUser._id,
-    accountId: defaultAccount._id,
-    date: dateObj.toISOString(),  
+    const dataToSend = {
+      ...form,
+      amount: String(form.amount),
+      userId: backendUser._id,
+      accountId: defaultAccount._id,
+      date: dateObj.toISOString(),
+    };
+
+    dispatch(createTransaction(dataToSend)).then((res) => {
+      if (res?.payload?.success) {
+        toast.success("Transaction added successfully!");
+        window.location.href = "/dashboard";
+      } else {
+        toast.error("Error adding transaction!");
+      }
+    });
   };
+  
+  const [receiptFile, setReceiptFile] = useState(null);
 
-  dispatch(createTransaction(dataToSend)).then((res) => {
-    if (res?.payload?.success) {
-      toast.success("Transaction added successfully!");
+  console.log(defaultAccount,"defaultaccount")
+const handleUploadReceipt = async () => {
+
+  if (!receiptFile) return toast.error("Upload a receipt image");
+  if (!defaultAccount) return toast.error("No default account");
+  toast.error("currently this feature is not Available");
+  return;
+
+  const formData = new FormData();
+  formData.append("receipt", receiptFile);           
+  formData.append("accountId", defaultAccount._id);  
+
+  try {
+    const res = await axios.post(
+      "/api/ai/receipt-transaction",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    if (res.data?.success) {
+      toast.success("Transaction added from receipt!");
       window.location.href = "/dashboard";
     } else {
-      toast.error("Error adding transaction!");
+      toast.error("Failed to process receipt");
     }
-  });
+  } catch (err) {
+    toast.error("AI receipt processing failed");
+  }
 };
+
+
 
   return (
     <div className="max-w-lg mx-auto p-5 bg-white rounded shadow">
+      {/* AI Receipt Upload Section */}
+      <div className="mb-6 p-4 border border-dashed border-purple-400 rounded-lg bg-purple-50">
+        <p className="text-sm font-medium text-purple-700 mb-3 text-center">
+          Upload your receipt image
+        </p>
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setReceiptFile(e.target.files[0])}
+          className="
+                w-full
+                text-sm
+                file:mr-4
+                file:py-2
+                file:px-4
+                file:rounded-md
+                file:border-0
+                file:text-sm
+                file:font-semibold
+                file:bg-purple-600
+                file:text-white
+                hover:file:bg-purple-700
+                cursor-pointer
+              "
+        />
+
+        <button
+          type="button"
+          onClick={handleUploadReceipt}
+          className="
+              mt-4
+              w-full
+              bg-gradient-to-r
+              from-pink-500
+              to-purple-500
+              text-white
+              font-semibold
+              py-2
+              rounded-lg
+              shadow
+              hover:opacity-90
+              transition
+            "
+        >
+          Upload Receipt (AI)
+        </button>
+      </div>
+
       <h2 className="text-xl font-semibold mb-4">Add Transaction</h2>
 
       <p className="mb-3 text-sm text-gray-600">
@@ -86,7 +169,6 @@ function AddTransactionForm() {
           </select>
         </div>
 
-        
         <div>
           <label className="block mb-1 font-medium">Amount</label>
           <input

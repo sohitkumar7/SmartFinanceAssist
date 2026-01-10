@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import CreateAccountDrower from "./CreateAccountDrower";
 import { Card, CardContent } from "../../components/ui/card";
 import { Plus } from "lucide-react";
@@ -7,6 +7,7 @@ import AccountCard from "./AccountCard";
 import { fetchBudget } from "../../Store/Budget-Slice";
 import toast from "react-hot-toast";
 import BudgetProgrress from "../../components/BudgetProgrress";
+import DashboardOverView from "./DashboardOverView.";
 
 function Dashboardpage() {
   const { allAccount } = useSelector((state) => state.Account);
@@ -38,6 +39,13 @@ function Dashboardpage() {
       }
 
       {/* overview */}
+
+      <Suspense fallback ={"Loading Overview"}> 
+        <DashboardOverView accounts ={allAccount} >
+           
+        </DashboardOverView>
+      </Suspense>
+
 
       {/* Account grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

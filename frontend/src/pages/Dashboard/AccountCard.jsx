@@ -1,82 +1,103 @@
 import React from "react";
 import {
   Card,
-  CardAction,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Switch } from "../../components/ui/switch.jsx";
-import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { ArrowDownLeft, ArrowUpRight, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { fetchallAccount, makeoneDefault } from "../../Store/Account-Slice/index.js";
+
+import {
+  fetchallAccount,
+  makeoneDefault,
+  deleteAccount,
+} from "../../Store/Account-Slice/index.js";
 
 function AccountCard({ account }) {
   const dispatch = useDispatch();
-    const { backendUser } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
-  // console.log(account);
+  const { backendUser } = useSelector((state) => state.auth);
 
-  function handlechange() {
-    if (account.isDefault) {
-      toast.error("You need atleast 1  Default Account ");
+  const { name, AccountType, balance, _id, isDefault } = account;
+
+  function handlechange(e) {
+    e.stopPropagation();
+
+    if (isDefault) {
+      toast.error("At least one default account is required");
       return;
     }
 
-    // console.log(account._id);
-    // console.log("handlechange");
-
-    dispatch(makeoneDefault({ accountId: account._id })).then((data) => {
-      if (data?.payload?.success) {
-        toast.success("Defaut account change");
+    dispatch(makeoneDefault({ accountId: _id })).then((res) => {
+      if (res?.payload?.success) {
+        toast.success("Default account changed");
+        dispatch(fetchallAccount({ UserId: backendUser._id }));
       } else {
-        toast.error("error in changing default Account");
+        toast.error("Failed to change default account");
       }
     });
-
-    dispatch(fetchallAccount({ UserId: backendUser._id })).then(
-      (data) => {
-        if (data?.payload?.success) {
-          // console.log(data);
-        } else {
-          toast.error("Failed to load Accounts");
-        }
-      }
-    );
-
-    window.location.reload();
   }
 
-  const { name, AccountType, balance, _id, isDefault } = account;
-  
-  const navigate = useNavigate();
+  function handleDelete(e) {
+    e.stopPropagation();
+
+    if (isDefault) {
+      toast.error("You cannot delete default account");
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this account?"
+    );
+    if (!confirmDelete) return;
+
+    dispatch(deleteAccount({ accountId: _id })).then((res) => {
+      if (res?.payload?.success) {
+        toast.success("Account deleted successfully");
+      } else {
+        toast.error("Failed to delete account");
+      }
+    });
+  }
+
   return (
     <Card
-      onClick={()=>navigate(`/account/${_id}`,{ state: { account } })}
-      className="hover:shadow-md transition-shadow group relative"
+      onClick={() => navigate(`/account/${_id}`, { state: { account } })}
+      className="group hover:shadow-md transition-shadow cursor-pointer"
     >
-      {/* <Link href={`/account/${_id}`}> */}
-
-      <CardHeader className="flex flex-row items-center justify-between  space-y-0 pb-2">
-        <CardTitle className=" text-sm font-medium capitalize">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-sm font-medium capitalize">
           {name}
         </CardTitle>
-        <Switch
-          // disabled={isDefault}
-          checked={isDefault}
-          onClick={handlechange}
-        />
+
+        <div className="flex items-center gap-2">
+          <Switch checked={isDefault} onClick={handlechange} />
+
+          {/* Trash only on hover */}
+          <button
+            onClick={handleDelete}
+            className="
+              text-red-500 hover:text-red-700
+              opacity-0 group-hover:opacity-100
+              transition-opacity duration-200
+            "
+          >
+            <Trash2 size={18} />
+          </button>
+        </div>
       </CardHeader>
 
       <CardContent>
         <div className="text-2xl font-bold">₹{balance}</div>
-
-        <p className="text-0.5xl text-muted-foreground  ">{AccountType}</p>
+        <p className="text-xs text-muted-foreground">{AccountType}</p>
       </CardContent>
+
       <CardFooter className="flex justify-between text-sm text-muted-foreground">
         <div className="flex items-center">
           <ArrowUpRight className="mr-1 h-4 w-4 text-green-500" />
@@ -87,9 +108,9 @@ function AccountCard({ account }) {
           Expense
         </div>
       </CardFooter>
-      {/* </Link> */}
     </Card>
   );
 }
 
 export default AccountCard;
+                                                        

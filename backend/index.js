@@ -9,6 +9,8 @@ import userRoutes from "./Router/userRouter.js"
 import accoutroutes from "./Router/AccountRouter.js"
 import transactionRoute from "./Router/transactionRoute.js"
 import BudgetRouter from "./Router/bugetRouter.js";
+import aiTransactionRoutes from "./Router/geminiapi.js"
+import dashboardrouter from "./Router/dashboarddata.js";
 
 dotenv.config();
 const app = express();
@@ -112,6 +114,10 @@ app.use("/api/transaction",transactionRoute)
 app.use("/api/user", userRoutes);
 app.use("/api/account",accoutroutes);
 app.use("/api/Budget",BudgetRouter)
+app.use("/api",aiTransactionRoutes)
+app.use("/api/data",dashboardrouter);
+console.log("Gemini Key Loaded:", process.env.GEMINI_API_KEY);
+
 
 const PORT = process.env.PORT || 4001;
 app.listen(PORT, () => console.log(`Server is listening on port ${PORT}`));
