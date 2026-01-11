@@ -11,48 +11,32 @@ import DashboardOverView from "./DashboardOverView.";
 
 function Dashboardpage() {
   const { allAccount } = useSelector((state) => state.Account);
-  const { budgetAmount,currentMonthExpenses,remaining} = useSelector((state) => state.budget);
+  const { budgetAmount, currentMonthExpenses, remaining } = useSelector(
+    (state) => state.budget
+  );
   const dispatch = useDispatch();
-
-  // console.log(allAccount)
 
   const DefaultAccount = allAccount.find((acc) => acc.isDefault === true);
 
-  // console.log("DefaultAccount",DefaultAccount);
-
-  let budgetData = null;
   useEffect(() => {
-  if (DefaultAccount) {
-    dispatch(fetchBudget(DefaultAccount._id));
-  }
-}, [DefaultAccount, dispatch]);
-
-
-  // console.log("budgetAmount",remaining)
+    if (DefaultAccount) {
+      dispatch(fetchBudget(DefaultAccount._id));
+    }
+  }, [DefaultAccount, dispatch]);
 
   return (
-    <div className="space-y-8 m-10">
-      {/* budget progress */}
+    <div className="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8 py-6">
+      {DefaultAccount && <BudgetProgrress DefaultAccount={DefaultAccount} />}
 
-        {DefaultAccount && <BudgetProgrress DefaultAccount={DefaultAccount} />
-        
-      }
-
-      {/* overview */}
-
-      <Suspense fallback ={"Loading Overview"}> 
-        <DashboardOverView accounts ={allAccount} >
-           
-        </DashboardOverView>
+      <Suspense fallback={"Loading Overview"}>
+        <DashboardOverView accounts={allAccount}></DashboardOverView>
       </Suspense>
 
-
-      {/* Account grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <CreateAccountDrower>
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
-            <CardContent className="flex flex-col items-center justify-center text-muted-foreground h-full pt-5">
-              <Plus className="h-10 w-10 mb-2"></Plus>
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <CardContent className="flex flex-col items-center justify-center text-muted-foreground h-full py-8">
+              <Plus className="h-10 w-10 mb-2" />
               <p className="text-sm font-medium">Add New Account</p>
             </CardContent>
           </Card>
@@ -65,7 +49,7 @@ function Dashboardpage() {
             );
           })
         ) : (
-          <p className="col-span-3 text-gray-500 italic pt-5">
+          <p className="col-span-1 sm:col-span-2 lg:col-span-3 text-gray-500 italic pt-5 text-center">
             No accounts found. Create one above.
           </p>
         )}

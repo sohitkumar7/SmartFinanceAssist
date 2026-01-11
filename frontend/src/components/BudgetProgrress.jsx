@@ -21,12 +21,12 @@ function BudgetProgrress({DefaultAccount}) {
   );
   const {backendUser} = useSelector((state)=>state.auth);
 
-  console.log(backendUser);
+  // console.log(backendUser);
 
   const [isEditing, setIsEditing] = useState(false);
   const [newBudget, setNewBudget] = useState(budgetAmount);
 
-  console.log(budgetAmount);
+  // console.log(budgetAmount);
 
   const percentUsed = (currentMonthExpenses / budgetAmount) * 100;
   const dispatch = useDispatch();

@@ -38,7 +38,7 @@ const DATE_RANGES = {
 };
 
 function AccountChart({ Transactions }) {
-  console.log(Transactions);
+  // console.log(Transactions);
 
   const [dateRange, setDateRange] = useState("6M");
 

@@ -15,7 +15,6 @@ function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, backendUser } = useSelector((state) => state.auth);
-  console.log(backendUser)
   const { allAccount } = useSelector((state) => state.Account);
 
   useEffect(() => {
@@ -29,16 +28,7 @@ function Dashboard() {
       dispatch(fetchCurrentUser())
         .then((data) => {
           if (data?.payload?.success) {
-            // console.log(data.payload.user);
-            dispatch(fetchallAccount({ UserId: data.payload.user._id })).then(
-              (data) => {
-                if (data?.payload?.success) {
-                  // console.log(data);
-                } else {
-                  toast.error("Failed to load Accounts");
-                }
-              }
-            );
+            dispatch(fetchallAccount({ UserId: data.payload.user._id }));
           } else {
             toast.error("failed to authenticate with backend");
           }
@@ -51,37 +41,34 @@ function Dashboard() {
 
   if (!isLoaded || !isAuthenticated) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen w-full">
+      <div className="flex flex-col items-center justify-center min-h-screen w-full px-4">
         <Loader2 className="h-8 w-8 text-indigo-600 animate-spin mb-3" />
-        <p className="text-indigo-600 font-medium">Loading...</p>
+        <p className="text-indigo-600 font-medium text-sm sm:text-base">
+          Loading...
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="">
-
+    <div className="min-h-screen w-full">
       <Header />
- 
 
-      <div className="ml-8 mt-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-6">
         <h1
-          className="text-5xl font-bold 
-            ml-1
-             text-blue-500ext-5xl   
-              leading-tight tracking-tighter
-              text-transparent bg-clip-text 
-              bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600"
+          className="
+            text-3xl sm:text-4xl lg:text-5xl font-bold
+            leading-tight tracking-tighter
+            text-transparent bg-clip-text
+            bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600
+          "
         >
           DashBoard
         </h1>
       </div>
 
-      <div>
-        <Suspense
-          className="mt-4  w-[100%] color-#9333ea"
-          fallback={<BarLoader />}
-        >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-6 pb-8">
+        <Suspense fallback={<BarLoader width="100%" color="#6366f1" />}>
           <Dashboardpage />
         </Suspense>
       </div>

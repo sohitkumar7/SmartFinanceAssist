@@ -68,10 +68,9 @@ const DashboardOverview = () => {
     }
   }, [accounts]);
 
-    const accountTransactions = transactions.filter(
+  const accountTransactions = transactions.filter(
     (t) => String(t.accountId) === String(selectedAccountId)
   );
-
 
   const recentTransactions = [...accountTransactions]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -87,7 +86,6 @@ const DashboardOverview = () => {
     );
   });
 
-
   const expensesByCategory = currentMonthExpenses.reduce((acc, t) => {
     acc[t.category] = (acc[t.category] || 0) + t.amount;
     return acc;
@@ -101,10 +99,9 @@ const DashboardOverview = () => {
   );
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {/* ---------------- Recent Transactions ---------------- */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full overflow-x-hidden">
+      <Card className="w-full max-w-full overflow-hidden">
+        <CardHeader className="flex flex-row items-center justify-between pb-4 px-4 sm:px-6">
           <CardTitle className="text-base font-normal">
             Recent Transactions
           </CardTitle>
@@ -113,7 +110,7 @@ const DashboardOverview = () => {
             value={selectedAccountId}
             onValueChange={setSelectedAccountId}
           >
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[120px] sm:w-[140px]">
               <SelectValue placeholder="Select account" />
             </SelectTrigger>
             <SelectContent>
@@ -126,7 +123,7 @@ const DashboardOverview = () => {
           </Select>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="px-4 sm:px-6">
           {isLoading ? (
             <p className="text-center py-4">Loading...</p>
           ) : recentTransactions.length === 0 ? (
@@ -138,10 +135,10 @@ const DashboardOverview = () => {
               {recentTransactions.map((t) => (
                 <div
                   key={t._id}
-                  className="flex items-center justify-between"
+                  className="flex items-center justify-between gap-2"
                 >
-                  <div>
-                    <p className="text-sm font-medium">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">
                       {t.description || "Untitled Transaction"}
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -151,7 +148,7 @@ const DashboardOverview = () => {
 
                   <div
                     className={cn(
-                      "flex items-center",
+                      "flex items-center shrink-0",
                       t.type === "EXPENSE"
                         ? "text-red-500"
                         : "text-green-500"
@@ -171,9 +168,8 @@ const DashboardOverview = () => {
         </CardContent>
       </Card>
 
-      {/* ---------------- Expense Breakdown ---------------- */}
-      <Card>
-        <CardHeader>
+      <Card className="w-full max-w-full overflow-hidden">
+        <CardHeader className="px-4 sm:px-6">
           <CardTitle className="text-base font-normal">
             Monthly Expense Breakdown
           </CardTitle>
@@ -185,14 +181,14 @@ const DashboardOverview = () => {
               No expenses this month
             </p>
           ) : (
-            <div className="h-[300px]">
+            <div className="h-[240px] sm:h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={pieChartData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={80}
+                    outerRadius={70}
                     dataKey="value"
                     label={({ name, value }) =>
                       `${name}: ₹${value.toFixed(0)}`

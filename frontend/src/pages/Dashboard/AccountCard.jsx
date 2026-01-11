@@ -69,17 +69,16 @@ function AccountCard({ account }) {
   return (
     <Card
       onClick={() => navigate(`/account/${_id}`, { state: { account } })}
-      className="group hover:shadow-md transition-shadow cursor-pointer"
+      className="group hover:shadow-md transition-shadow cursor-pointer w-full"
     >
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium capitalize">
+      <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6">
+        <CardTitle className="text-sm sm:text-base font-medium capitalize truncate max-w-[60%]">
           {name}
         </CardTitle>
 
         <div className="flex items-center gap-2">
           <Switch checked={isDefault} onClick={handlechange} />
 
-          {/* Trash only on hover */}
           <button
             onClick={handleDelete}
             className="
@@ -93,12 +92,16 @@ function AccountCard({ account }) {
         </div>
       </CardHeader>
 
-      <CardContent>
-        <div className="text-2xl font-bold">₹{balance}</div>
-        <p className="text-xs text-muted-foreground">{AccountType}</p>
+      <CardContent className="px-4 sm:px-6">
+        <div className="text-xl sm:text-2xl font-bold truncate">
+          ₹{balance}
+        </div>
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          {AccountType}
+        </p>
       </CardContent>
 
-      <CardFooter className="flex justify-between text-sm text-muted-foreground">
+      <CardFooter className="flex flex-col sm:flex-row sm:justify-between gap-2 px-4 sm:px-6 text-xs sm:text-sm text-muted-foreground">
         <div className="flex items-center">
           <ArrowUpRight className="mr-1 h-4 w-4 text-green-500" />
           Income
@@ -113,4 +116,3 @@ function AccountCard({ account }) {
 }
 
 export default AccountCard;
-                                                        
