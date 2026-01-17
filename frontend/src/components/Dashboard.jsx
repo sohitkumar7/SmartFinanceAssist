@@ -1,5 +1,4 @@
 import { useUser } from "@clerk/clerk-react";
-import { fetchCurrentUser } from "../Store/Auth-Slice/index.js";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Suspense, useEffect } from "react";
@@ -10,12 +9,16 @@ import { BarLoader } from "react-spinners";
 import { fetchallAccount } from "../Store/Account-Slice/index.js";
 import { Loader2 } from "lucide-react";
 
+import { useAuthenticatedAxios } from "@/hooks/useAuthenticatedAxios";
+import { setUser } from "@/Store/Auth-Slice";
+
 function Dashboard() {
   const { user, isLoaded, isSignedIn } = useUser();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated, backendUser } = useSelector((state) => state.auth);
-  const { allAccount } = useSelector((state) => state.Account);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  const api = useAuthenticatedAxios();   // ✅ AUTHENTICATED AXIOS
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -25,19 +28,20 @@ function Dashboard() {
     }
 
     if (isLoaded && isSignedIn && !isAuthenticated) {
-      dispatch(fetchCurrentUser())
-        .then((data) => {
-          if (data?.payload?.success) {
-            dispatch(fetchallAccount({ UserId: data.payload.user._id }));
-          } else {
-            toast.error("failed to authenticate with backend");
-          }
-        })
-        .catch(() => {
-          toast.error("Failed to authenticate with backend.");
-        });
+      const loadUser = async () => {
+        try {
+          const res = await api.get("/api/user/me");     // ✅ token sent
+          dispatch(setUser(res.data.user));              // ✅ redux updated
+          dispatch(fetchallAccount({ UserId: res.data.user._id }));
+        } catch (error) {
+          console.error(error);
+          toast.error("Failed to authenticate with backend");
+        }
+      };
+
+      loadUser();
     }
-  }, [isLoaded, isSignedIn, dispatch, navigate, isAuthenticated]);
+  }, [isLoaded, isSignedIn, isAuthenticated]);
 
   if (!isLoaded || !isAuthenticated) {
     return (
@@ -55,14 +59,7 @@ function Dashboard() {
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-6">
-        <h1
-          className="
-            text-3xl sm:text-4xl lg:text-5xl font-bold
-            leading-tight tracking-tighter
-            text-transparent bg-clip-text
-            bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600
-          "
-        >
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
           DashBoard
         </h1>
       </div>
