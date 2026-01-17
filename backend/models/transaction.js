@@ -65,13 +65,15 @@ const transactionSchema = new mongoose.Schema({
 
 //   Foreign key for the user relationship.
   userId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
 
   // Foreign key for the account relationship.
   accountId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "account",
     required: true,
   },
   

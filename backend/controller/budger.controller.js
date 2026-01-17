@@ -1,14 +1,37 @@
 import Account from "../models/Account.js";
 import Budget from "../models/budgets.js";
 import Transaction from "../models/transaction.js";
+import User from "../models/user.js";
 
 export const fetchBudget = async (req, res) => {
   try {
-    const { AccountId } = req.params;
-    // console.log(AccountId)
+    const { userId: clerkId } = req.auth();
+    const { accountId } = req.params;
 
-    const budget = await Budget.findOne({ AccountId: AccountId });
-    // console.log(budget);
+    // Get user from database using clerkId
+    const user = await User.findOne({ clerkId: clerkId });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User does not exist",
+      });
+    }
+
+    // Validate account exists
+    const account = await Account.findById(accountId);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+      });
+    }
+
+    // Validate ownership
+    if (!account.userId.equals(user._id)) {
+      return res.status(403).json({ success: false, message: "Not authorized to view budget for this account" });
+    }
+
+    const budget = await Budget.findOne({ AccountId: account._id }).lean();
 
     if (!budget) {
       return res.status(404).json({
@@ -21,11 +44,10 @@ export const fetchBudget = async (req, res) => {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-   
     const expensesAgg = await Transaction.aggregate([
       {
         $match: {
-          accountId: AccountId, 
+          accountId: account._id,
           type: "EXPENSE",
           date: { $gte: startOfMonth, $lte: endOfMonth },
         },
@@ -60,9 +82,33 @@ export const fetchBudget = async (req, res) => {
 
 export const createBudet = async (req, res) => {
   try {
-    const { AccountId, amount, userId } = req.body;
+    const { userId: clerkId } = req.auth();
+    const { AccountId, amount } = req.body;
 
-    let budget = await Budget.findOne({ AccountId });
+    // Get user from database using clerkId
+    const user = await User.findOne({ clerkId: clerkId });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User does not exist",
+      });
+    }
+
+    // Validate account exists
+    const account = await Account.findById(AccountId);
+    if (!account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account not found",
+      });
+    }
+
+    // Validate ownership
+    if (!account.userId.equals(user._id)) {
+      return res.status(403).json({ success: false, message: "Not authorized to create budget for this account" });
+    }
+
+    let budget = await Budget.findOne({ AccountId: account._id });
 
     if (budget) {
       // Update existing budget
@@ -78,9 +124,9 @@ export const createBudet = async (req, res) => {
 
     // Create new budget
     budget = new Budget({
-      AccountId,
+      AccountId: account._id,
+      userId: user._id,
       amount,
-      userId
     });
 
     await budget.save();
@@ -99,3 +145,4 @@ export const createBudet = async (req, res) => {
     });
   }
 };
+

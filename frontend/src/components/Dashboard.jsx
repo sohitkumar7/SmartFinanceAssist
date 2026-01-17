@@ -13,12 +13,12 @@ import { useAuthenticatedAxios } from "../hoook/useAuthenticated.js";
 import { setUser } from "@/Store/Auth-Slice";
 
 function Dashboard() {
-  const { user, isLoaded, isSignedIn } = useUser();
+  const { isLoaded, isSignedIn } = useUser();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
 
-  const api = useAuthenticatedAxios();   // ✅ AUTHENTICATED AXIOS
+  const api = useAuthenticatedAxios();
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -30,11 +30,10 @@ function Dashboard() {
     if (isLoaded && isSignedIn && !isAuthenticated) {
       const loadUser = async () => {
         try {
-          const res = await api.get("/api/user/me");     // ✅ token sent
-          dispatch(setUser(res.data.user));              // ✅ redux updated
-          dispatch(fetchallAccount({ UserId: res.data.user._id }));
+          const res = await api.get("/api/user/me");
+          dispatch(setUser(res.data.user));
+          dispatch(fetchallAccount());
         } catch (error) {
-          console.error(error);
           toast.error("Failed to authenticate with backend");
         }
       };
@@ -59,7 +58,14 @@ function Dashboard() {
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 sm:mt-6">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
+        <h1
+          className="
+            text-3xl sm:text-4xl lg:text-5xl font-bold
+            leading-tight tracking-tighter
+            text-transparent bg-clip-text
+            bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600
+          "
+        >
           DashBoard
         </h1>
       </div>

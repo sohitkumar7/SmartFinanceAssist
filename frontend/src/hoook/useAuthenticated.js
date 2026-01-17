@@ -1,20 +1,18 @@
-import axios from 'axios';
-import { useAuth } from '@clerk/clerk-react';
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
 
 export const useAuthenticatedAxios = () => {
-  // This hook requires a component context (cannot be used inside a Redux thunk)
-  const { getToken } = useAuth(); 
+  const { getToken } = useAuth();
 
-  const instance = axios.create();
+  const instance = axios.create({
+    baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true,
+  });
 
-  // Interceptor runs BEFORE every request to attach the token
   instance.interceptors.request.use(
     async (config) => {
-      // Get a fresh JWT token for the current session
-      const token = await getToken(); 
-      
+      const token = await getToken();
       if (token) {
-        // Attach the token to the request headers
         config.headers.Authorization = `Bearer ${token}`;
       }
       return config;

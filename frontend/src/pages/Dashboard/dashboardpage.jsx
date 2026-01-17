@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import CreateAccountDrower from "./CreateAccountDrower";
 import { Card, CardContent } from "../../components/ui/card";
 import { Plus } from "lucide-react";
@@ -16,13 +16,20 @@ function Dashboardpage() {
   );
   const dispatch = useDispatch();
 
+  // Track the current default account ID
+  const [currentDefaultAccountId, setCurrentDefaultAccountId] = useState(null);
+
+  // Find the default account
   const DefaultAccount = allAccount.find((acc) => acc.isDefault === true);
 
   useEffect(() => {
-    if (DefaultAccount) {
+    // Update the tracked default account ID when it changes
+    if (DefaultAccount?._id && DefaultAccount._id !== currentDefaultAccountId) {
+      setCurrentDefaultAccountId(DefaultAccount._id);
+      // Fetch budget for the default account
       dispatch(fetchBudget(DefaultAccount._id));
     }
-  }, [DefaultAccount, dispatch]);
+  }, [DefaultAccount, currentDefaultAccountId, dispatch]);
 
   return (
     <div className="space-y-6 sm:space-y-8 px-4 sm:px-6 lg:px-8 py-6">

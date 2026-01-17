@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createTransaction } from "../../Store/Transaction-Slice/index.js";
+import { fetchBudget } from "../../Store/Budget-Slice/index.js";
 import { toast } from "react-hot-toast";
 import { defaultCategories } from "../Account/data.js";
 import { useNavigate } from "react-router-dom";
@@ -9,11 +10,11 @@ import api from "../../services/api.js";
 
 function AddTransactionForm() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { allAccount } = useSelector((state) => state.Account);
   const { backendUser } = useSelector((state) => state.auth);
 
   const defaultAccount = allAccount?.find((acc) => acc.isDefault);
-  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     type: "EXPENSE",
@@ -48,7 +49,6 @@ function AddTransactionForm() {
     const dataToSend = {
       ...form,
       amount: String(form.amount),
-      userId: backendUser._id,
       accountId: defaultAccount._id,
       date: dateObj.toISOString(),
     };
@@ -56,7 +56,16 @@ function AddTransactionForm() {
     dispatch(createTransaction(dataToSend)).then((res) => {
       if (res?.payload?.success) {
         toast.success("Transaction added successfully!");
-        window.location.href = "/dashboard";
+        // Refresh budget to update progress bar
+        if (form.type === "EXPENSE" && defaultAccount?._id) {
+          console.log("Fetching budget for account:", defaultAccount._id); // Debug
+          dispatch(fetchBudget(defaultAccount._id)).then(() => {
+            // Navigate after fetch completes
+            navigate("/dashboard");
+          });
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         toast.error("Error adding transaction!");
       }
@@ -86,7 +95,7 @@ const handleUploadReceipt = async () => {
 
     if (res.data?.success) {
       toast.success("Transaction added from receipt!");
-      window.location.href = "/dashboard";
+      navigate("/dashboard");
     } else {
       toast.error("Failed to process receipt");
     }

@@ -1,46 +1,24 @@
-  import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-// import api from "api";
-import api from "../../services/api.js";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isAuthenticated: false,
-  isLoading: true,
   backendUser: null,
 };
-
-// This thunk will now make a GET request to a protected route
-// without passing any user ID from the frontend.
-export const fetchCurrentUser = createAsyncThunk("/auth/currentUser", async () => {
-  const response = await api.get("/api/user/me");
-  return response.data;
-});
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchCurrentUser.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        if (action.payload.success) {
-          state.backendUser = action.payload.user;
-          state.isAuthenticated = true;
-        } else {
-          state.backendUser = null;
-          state.isAuthenticated = false;
-        }
-      })
-      .addCase(fetchCurrentUser.rejected, (state, action) => {
-        state.isLoading = false;
-        state.backendUser = null;
-        state.isAuthenticated = false;
-        console.error("Failed to fetch user:", action.error.message);
-      });
+  reducers: {
+    setUser: (state, action) => {
+      state.backendUser = action.payload;
+      state.isAuthenticated = true;
+    },
+    clearUser: (state) => {
+      state.backendUser = null;
+      state.isAuthenticated = false;
+    },
   },
 });
 
+export const { setUser, clearUser } = authSlice.actions;
 export default authSlice.reducer;

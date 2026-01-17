@@ -30,6 +30,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { DashfetchAllTransaction } from "../../Store/Dashboarddataslice/index.js";
+import { fetchBudget } from "../../Store/Budget-Slice/index.js";
 
 const COLORS = [
   "#FF6B6B",
@@ -65,8 +66,17 @@ const DashboardOverview = () => {
     if (accounts.length > 0) {
       const defaultAcc = accounts.find((a) => a.isDefault) || accounts[0];
       setSelectedAccountId(defaultAcc._id);
+      // Fetch budget for the default account
+      dispatch(fetchBudget(defaultAcc._id));
     }
-  }, [accounts]);
+  }, [accounts, dispatch]);
+
+  // Fetch budget when selected account changes
+  useEffect(() => {
+    if (selectedAccountId) {
+      dispatch(fetchBudget(selectedAccountId));
+    }
+  }, [selectedAccountId, dispatch]);
 
   const accountTransactions = transactions.filter(
     (t) => String(t.accountId) === String(selectedAccountId)

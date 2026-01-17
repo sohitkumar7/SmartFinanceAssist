@@ -4,28 +4,20 @@ import mongoose from "mongoose";
 
 export const createAccount = async (req, res) => {
   try {
-    const { name, userId, balance, type, isDefault } = req.body;
+    const { userId } = req.auth();
+    const { name, balance, type, isDefault } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid User ID format.", // Responds with 400 for a malformed ID
-      });
-    }
+    // Find user by clerkId
+    const user = await User.findOne({ clerkId: userId });
 
-    const userObjectId = new mongoose.Types.ObjectId(userId);
-
-    // 3. Find User by their _id
-    const find_user = await User.findById(userObjectId); // Mongoose knows to query the _id
-
-    if (!find_user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "user does not exist",
       });
     }
 
-    const allAccount = await Account.find({ userId: userObjectId });
+    const allAccount = await Account.find({ userId: user._id });
     let isdefault = isDefault;
     if (allAccount.length == 0) {
       isdefault = true;
@@ -33,7 +25,7 @@ export const createAccount = async (req, res) => {
 
     const newAccount = new Account({
       name,
-      userId,
+      userId: user._id, // Use user._id (ObjectId) instead of clerkId (String)
       balance,
       isDefault: isdefault,
       AccountType: type,
@@ -56,33 +48,19 @@ export const createAccount = async (req, res) => {
 
 export const getAccount = async (req, res) => {
   try {
-    const { UserId } = req.params;
+    const { userId } = req.auth();
 
-    // Now, assign it to a variable with the convention you prefer for consistency
-    const userId = UserId;
+    // Find user by clerkId
+    const user = await User.findOne({ clerkId: userId });
 
-    // Add the trim() safety check here, but now it works because UserId is defined
-    const trimmedUserId = userId.trim();
-
-    if (!mongoose.Types.ObjectId.isValid(trimmedUserId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid User ID format.",
-      });
-    }
-
-    const userObjectId = new mongoose.Types.ObjectId(trimmedUserId);
-
-    const find_user = await User.findById(userObjectId); // Mongoose knows to query the _id
-
-    if (!find_user) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "user does not exist",
       });
     }
 
-    const allAccount = await Account.find({ userId: userObjectId });
+    const allAccount = await Account.find({ userId: user._id });
 
     res.status(200).json({
       success: true,
@@ -98,6 +76,7 @@ export const getAccount = async (req, res) => {
 };
 
 export const makeOneDefault = async (req, res) => {
+  const { userId } = req.auth();
   const { accountId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(accountId)) {
@@ -119,10 +98,22 @@ export const makeOneDefault = async (req, res) => {
         .json({ success: false, message: "Account not found." });
     }
 
-    const targetUserId = targetAccount.userId;
+    // Get user from database using clerkId
+    const user = await User.findOne({ clerkId: userId }).session(session);
+
+    if (!user) {
+      await session.abortTransaction();
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Validate ownership - use user._id (ObjectId) instead of userId (Clerk string)
+    if (!targetAccount.userId.equals(user._id)) {
+      await session.abortTransaction();
+      return res.status(403).json({ success: false, message: "Not authorized to modify this account" });
+    }
 
     await Account.updateMany(
-      { userId: targetUserId },
+      { userId: user._id },
       { $set: { isDefault: false } },
       { session }
     );
@@ -137,7 +128,7 @@ export const makeOneDefault = async (req, res) => {
     session.endSession();
 
     console.log(
-      `Default account set for user ${targetUserId}. New default ID: ${updatedTarget._id}`
+      `Default account set for user ${userId}. New default ID: ${updatedTarget._id}`
     );
 
     res.status(200).json({
@@ -160,6 +151,7 @@ export const makeOneDefault = async (req, res) => {
 
 export const deleteAccount = async (req, res) => {
   try {
+    const { userId } = req.auth();
     const { accountId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(accountId)) {
@@ -176,6 +168,21 @@ export const deleteAccount = async (req, res) => {
         success: false,
         message: "Account not found.",
       });
+    }
+
+    // Get user from database using clerkId
+    const user = await User.findOne({ clerkId: userId });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Validate ownership - use user._id (ObjectId) instead of userId (Clerk string)
+    if (!account.userId.equals(user._id)) {
+      return res.status(403).json({ success: false, message: "Not authorized to delete this account" });
     }
 
     await Account.findByIdAndDelete(accountId);
@@ -195,3 +202,4 @@ export const deleteAccount = async (req, res) => {
     });
   }
 };
+

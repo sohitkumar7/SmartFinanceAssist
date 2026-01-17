@@ -9,11 +9,13 @@ const budgetSchea = new mongoose.Schema({
         type:Date,
     },
     AccountId:{
-        type:String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "account",
         required:true,
     },
     userId:{
-        type:String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required:true,
     }
 

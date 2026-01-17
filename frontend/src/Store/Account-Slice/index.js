@@ -9,17 +9,25 @@ const initialState = {
 
 export const createAccount = createAsyncThunk(
   "/create/account",
-  async (formData) => {
-    const response = await api.post("/api/account/create", formData);
-    return response.data;
+  async (formData, thunkAPI) => {
+    try {
+      const response = await api.post("/api/account/create", formData);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || "Error");
+    }
   }
 );
 
 export const fetchallAccount = createAsyncThunk(
   "/get/allAccount",
-  async ({ UserId }) => {
-    const response = await api.get(`/api/account/get/${UserId}`);
-    return response.data;
+  async (_, thunkAPI) => {
+    try {
+      const response = await api.get(`/api/account/get`);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || "Error");
+    }
   }
 );
 export const makeoneDefault = createAsyncThunk(

@@ -31,6 +31,7 @@ import {
   makeoneDefault,
   deleteAccount,
 } from "../../Store/Account-Slice/index.js";
+import { fetchBudget } from "../../Store/Budget-Slice/index.js";
 
 function AccountCard({ account }) {
   const dispatch = useDispatch();
@@ -53,6 +54,8 @@ function AccountCard({ account }) {
       if (res?.payload?.success) {
         toast.success("Default account changed");
         dispatch(fetchallAccount({ UserId: backendUser._id }));
+        // Fetch budget for the new default account
+        dispatch(fetchBudget(res.payload.updatedAccount._id));
       } else {
         toast.error("Failed to change default account");
       }

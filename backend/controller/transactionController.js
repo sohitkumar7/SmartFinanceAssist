@@ -1,9 +1,11 @@
 import Transaction from "../models/transaction.js";
-import Account from "../models/Account.js"
+import Account from "../models/Account.js";
+import User from "../models/user.js";
 import mongoose from "mongoose";
 
 export const createTransation = async (req, res) => {
   try {
+    const { userId: clerkId } = req.auth();
     const {
       type,
       amount,
@@ -16,9 +18,50 @@ export const createTransation = async (req, res) => {
       nextRecurringDate,
       lastProcessed,
       status,
-      userId,
       accountId,
     } = req.body;
+
+    const trimmedAccountId = accountId.trim();
+
+    if (!mongoose.Types.ObjectId.isValid(trimmedAccountId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Account Id format.",
+      });
+    }
+
+    const Found_Account = await Account.findById(trimmedAccountId);
+
+    if (!Found_Account) {
+      return res.status(404).json({
+        success: false,
+        message: "Account does not exist",
+      });
+    }
+
+    // Get user from database using clerkId
+    const user = await User.findOne({ clerkId: clerkId });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User does not exist",
+      });
+    }
+
+    // Validate ownership
+    if (!Found_Account.userId.equals(user._id)) {
+      return res.status(403).json({ success: false, message: "Not authorized to create transaction on this account" });
+    }
+
+    console.log(Found_Account, "found account in create transaction");
+
+    if (type === "INCOME") {
+      Found_Account.balance += Number(amount);
+    } else if (type === "EXPENSE") {
+      Found_Account.balance -= Number(amount);
+    }
+
+    await Found_Account.save();
 
     const transaction = new Transaction({
       type,
@@ -32,40 +75,9 @@ export const createTransation = async (req, res) => {
       nextRecurringDate,
       lastProcessed,
       status,
-      userId,
-      accountId,
+      userId: user._id, // Store user's _id (ObjectId) instead of clerkId
+      accountId: Found_Account._id,
     });
-
-    const trimmedAccountId = accountId.trim();
-
-    if (!mongoose.Types.ObjectId.isValid(trimmedAccountId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid Account Id format.",
-      });
-    }
-
-    const userAccountId = new mongoose.Types.ObjectId(trimmedAccountId);
-
-    const Found_Account = await Account.findById(userAccountId); // Mongoose knows to query the _id
-
-    if (!Found_Account) {
-      return res.status(404).json({
-        success: false,
-        message: "Account does not exist",
-      });
-    }
-
-    console.log(Found_Account,"found account in create transaction")
-
-    if (type === "INCOME") {
-      Found_Account.balance += Number(amount);
-    } else if (type === "EXPENSE") {
-      Found_Account.balance -= Number(amount);
-    }
-
-    // 5️⃣ Save transaction and updated account
-    await Found_Account.save();
 
     const savedTransaction = await transaction.save();
 
@@ -87,9 +99,10 @@ export const createTransation = async (req, res) => {
 
 export const fetchAllTransaction = async (req, res) => {
   try {
+    const { userId: clerkId } = req.auth();
     const { accountId } = req.params;
 
-     const trimmedAccountId = accountId.trim();
+    const trimmedAccountId = accountId.trim();
 
     if (!mongoose.Types.ObjectId.isValid(trimmedAccountId)) {
       return res.status(400).json({
@@ -98,9 +111,7 @@ export const fetchAllTransaction = async (req, res) => {
       });
     }
 
-    const userAccountId = new mongoose.Types.ObjectId(trimmedAccountId);
-
-    const Found_Account = await Account.findById(userAccountId); // Mongoose knows to query the _id
+    const Found_Account = await Account.findById(trimmedAccountId);
 
     if (!Found_Account) {
       return res.status(404).json({
@@ -109,9 +120,23 @@ export const fetchAllTransaction = async (req, res) => {
       });
     }
 
+    // Get user from database using clerkId
+    const user = await User.findOne({ clerkId: clerkId });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User does not exist",
+      });
+    }
+
+    // Validate ownership
+    if (!Found_Account.userId.equals(user._id)) {
+      return res.status(403).json({ success: false, message: "Not authorized to view transactions on this account" });
+    }
+
     console.log("accountId", accountId);
 
-    const allTransaction = await Transaction.find({ accountId });
+    const allTransaction = await Transaction.find({ accountId: Found_Account._id });
     console.log("transection", allTransaction);
     return res.status(200).json({
       success: true,
@@ -129,6 +154,7 @@ export const fetchAllTransaction = async (req, res) => {
 
 export const deleteAllTransaction = async (req, res) => {
   try {
+    const { userId: clerkId } = req.auth();
     const { selectedIds, accountId } = req.body;
 
     console.log(selectedIds, "selectedids");
@@ -156,6 +182,20 @@ export const deleteAllTransaction = async (req, res) => {
       });
     }
 
+    // Get user from database using clerkId
+    const user = await User.findOne({ clerkId: clerkId });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User does not exist",
+      });
+    }
+
+    // Validate ownership
+    if (!account.userId.equals(user._id)) {
+      return res.status(403).json({ success: false, message: "Not authorized to delete transactions on this account" });
+    }
+
     const transactionsToDelete = await Transaction.find({ _id: { $in: selectedIds } });
 
     transactionsToDelete.forEach((transaction) => {
@@ -170,7 +210,7 @@ export const deleteAllTransaction = async (req, res) => {
 
     await Transaction.deleteMany({ _id: { $in: selectedIds } });
 
-    const allTransaction = await Transaction.find({ accountId: accountObjectId });
+    const allTransaction = await Transaction.find({ accountId: account._id });
 
     console.log("transection", allTransaction);
 
@@ -190,3 +230,4 @@ export const deleteAllTransaction = async (req, res) => {
     });
   }
 };
+

@@ -1,17 +1,34 @@
 import Transaction from "../models/transaction.js";
+import Account from "../models/Account.js";
+import User from "../models/user.js";
 
 export const dashboarddata = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { userId: clerkId } = req.auth();
 
-    if (!userId) {
-      return res.status(400).json({
+    // Get user from database using clerkId
+    const user = await User.findOne({ clerkId: clerkId });
+    if (!user) {
+      return res.status(404).json({
         success: false,
-        message: "UserId is required",
+        message: "User does not exist",
       });
     }
 
-    const alltransaction = await Transaction.find({ userId }).sort({ date: -1 });
+    // Find all accounts belonging to user
+    const accounts = await Account.find({ userId: user._id });
+    
+    if (accounts.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+      });
+    }
+
+    const accountIds = accounts.map(account => account._id);
+
+    // Find all transactions for user's accounts
+    const alltransaction = await Transaction.find({ accountId: { $in: accountIds } }).sort({ date: -1 });
 
     return res.status(200).json({
       success: true,
@@ -27,3 +44,4 @@ export const dashboarddata = async (req, res) => {
     });
   }
 };
+

@@ -10,9 +10,13 @@ const initialState = {
 
 export const createBudget = createAsyncThunk(
   "/create/update/budget",
-  async ( formData ) => {
-    const response = await api.post("/api/Budget/Upsert", formData);
-    return response.data;
+  async ({ AccountId, amount }, thunkAPI) => {
+    try {
+      const response = await api.post("/api/Budget/Upsert", { AccountId, amount });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || "Error");
+    }
   }
 );
 

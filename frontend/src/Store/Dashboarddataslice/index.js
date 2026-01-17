@@ -8,9 +8,9 @@ const initialState = {
 
 export const DashfetchAllTransaction = createAsyncThunk(
   "dashboard/getAllTransaction",
-  async ({ userId }, thunkAPI) => {
+  async (_, thunkAPI) => {
     try {
-      const response = await api.get(`/api/data/getdata/${userId}`);
+      const response = await api.get(`/api/data/getdata`);
       return response.data; // expecting { success, data }
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || "Error");

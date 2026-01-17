@@ -11,9 +11,13 @@ const initialState = {
 
 export const createTransaction = createAsyncThunk(
   "/create/transaction",
-  async (formData) => {
-    const response = api.post("/api/transaction/create", formData);
-    return (await response).data;
+  async (formData, thunkAPI) => {
+    try {
+      const response = await api.post("/api/transaction/create", formData);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || "Error");
+    }
   }
 );
 

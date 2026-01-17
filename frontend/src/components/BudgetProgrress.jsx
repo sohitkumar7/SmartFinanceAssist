@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Card,
@@ -10,7 +10,7 @@ import {
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Check, Pencil, X } from "lucide-react";
-import { createBudget } from "../Store/Budget-Slice/index.js";
+import { createBudget, fetchBudget } from "../Store/Budget-Slice/index.js";
 import toast from "react-hot-toast";
 import {Progress} from "../components/ui/progress.jsx"
 
@@ -19,7 +19,15 @@ function BudgetProgrress({DefaultAccount}) {
   const { budgetAmount, currentMonthExpenses, remaining } = useSelector(
     (state) => state.budget
   );
-  const {backendUser} = useSelector((state)=>state.auth);
+
+  const dispatch = useDispatch();
+
+  // Fetch budget on mount and when account changes
+  useEffect(() => {
+    if (DefaultAccount?._id) {
+      dispatch(fetchBudget(DefaultAccount._id));
+    }
+  }, [DefaultAccount, dispatch]);
 
   // console.log(backendUser);
 
@@ -28,8 +36,7 @@ function BudgetProgrress({DefaultAccount}) {
 
   // console.log(budgetAmount);
 
-  const percentUsed = (currentMonthExpenses / budgetAmount) * 100;
-  const dispatch = useDispatch();
+  const percentUsed = budgetAmount > 0 ? (currentMonthExpenses / budgetAmount) * 100 : 0;
 
 
 
@@ -46,7 +53,6 @@ function BudgetProgrress({DefaultAccount}) {
     const formData = {
         AccountId : DefaultAccount._id,
         amount: newBudget,
-        userId: backendUser._id
     }
 
     console.log(formData,"formData")
@@ -55,6 +61,8 @@ function BudgetProgrress({DefaultAccount}) {
     await dispatch(createBudget(formData)).then((data) => {
         if(data?.payload?.success){
             toast.success("Budget Updated Successfully")
+            // Fetch the updated budget data
+            dispatch(fetchBudget(DefaultAccount._id))
         }
     })
 
@@ -107,8 +115,8 @@ function BudgetProgrress({DefaultAccount}) {
             ) : (
               <>
                 <CardDescription>
-                  {budgetAmount
-                    ? `${currentMonthExpenses.toFixed(2)} of ${budgetAmount.toFixed(2)} `
+                  {budgetAmount !== null && budgetAmount > 0
+                    ? `${currentMonthExpenses?.toFixed(2) || "0.00"} of ${budgetAmount.toFixed(2)} `
                     : "No Budget Set"}
 
                 </CardDescription>
@@ -126,24 +134,24 @@ function BudgetProgrress({DefaultAccount}) {
         </div>
       </CardHeader>
       <CardContent>
-        {budgetAmount && (
+        {budgetAmount !== null && budgetAmount > 0 ? (
           <div className="space-y-2">
             <Progress
               value={percentUsed}
-              extraStyles={`${
-                // add to Progress component
+              className="h-2 w-full bg-gray-200 rounded-full overflow-hidden"
+              indicatorClassName={
                 percentUsed >= 90
                   ? "bg-red-500"
                   : percentUsed >= 75
                   ? "bg-yellow-500"
                   : "bg-green-500"
-              }`}
+              }
             />
             <p className="text-xs text-muted-foreground text-right">
               {percentUsed.toFixed(1)}% used
             </p>
           </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );
