@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 
 export const createAccount = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const { userId } = req.auth;
     const { name, balance, type, isDefault } = req.body;
 
     // Find user by clerkId
@@ -48,7 +48,7 @@ export const createAccount = async (req, res) => {
 
 export const getAccount = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const { userId } = req.auth;
 
     // Find user by clerkId
     const user = await User.findOne({ clerkId: userId });
@@ -76,7 +76,7 @@ export const getAccount = async (req, res) => {
 };
 
 export const makeOneDefault = async (req, res) => {
-  const { userId } = req.auth();
+  const { userId } = req.auth;
   const { accountId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(accountId)) {
@@ -151,7 +151,7 @@ export const makeOneDefault = async (req, res) => {
 
 export const deleteAccount = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    const { userId } = req.auth;
     const { accountId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(accountId)) {

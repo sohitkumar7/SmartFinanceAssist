@@ -12,7 +12,7 @@ const model = genAI.getGenerativeModel({
 
 export const createTransactionFromReceipt = async (req, res) => {
   try {
-    const { userId: clerkId } = req.auth();
+    const { userId: clerkId } = req.auth;
     const { accountId } = req.body;
 
     // 1️⃣ Validate receipt image

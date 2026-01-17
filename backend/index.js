@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import cookieParser from "cookie-parser";
 import cors from "cors";
 import User from "./models/user.js";
 import { Webhook } from "svix";
@@ -11,25 +10,20 @@ import transactionRoute from "./Router/transactionRoute.js"
 import BudgetRouter from "./Router/bugetRouter.js";
 import aiTransactionRoutes from "./Router/geminiapi.js"
 import dashboardrouter from "./Router/dashboarddata.js";
-import { clerkMiddleware } from "@clerk/express";
 
 dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cookieParser());
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
       "https://smart-finance-assist.vercel.app",
       "https://smartfinanceassist.onrender.com" 
-
     ],
-    credentials: true,
   })
 );
-app.use(clerkMiddleware());
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))

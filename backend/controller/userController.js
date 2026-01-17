@@ -2,7 +2,8 @@ import User from "../models/user.js";
 
 export const getCurrentUser = async (req, res) => {
   try {
-    const { userId } = req.auth();
+    // req.auth is an object in Clerk SDK v5+, not a function
+    const { userId } = req.auth;
 
     let user = await User.findOne({ clerkId: userId });
 

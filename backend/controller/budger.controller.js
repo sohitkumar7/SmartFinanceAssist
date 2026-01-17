@@ -5,7 +5,7 @@ import User from "../models/user.js";
 
 export const fetchBudget = async (req, res) => {
   try {
-    const { userId: clerkId } = req.auth();
+    const { userId: clerkId } = req.auth;
     const { accountId } = req.params;
 
     // Get user from database using clerkId
@@ -82,7 +82,7 @@ export const fetchBudget = async (req, res) => {
 
 export const createBudet = async (req, res) => {
   try {
-    const { userId: clerkId } = req.auth();
+    const { userId: clerkId } = req.auth;
     const { AccountId, amount } = req.body;
 
     // Get user from database using clerkId

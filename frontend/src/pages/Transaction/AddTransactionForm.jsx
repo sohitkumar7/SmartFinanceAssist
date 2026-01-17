@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createTransaction } from "../../Store/Transaction-Slice/index.js";
 import { fetchBudget } from "../../Store/Budget-Slice/index.js";
+import { fetchallAccount } from "../../Store/Account-Slice/index.js";
+import { DashfetchAllTransaction } from "../../Store/Dashboarddataslice/index.js";
 import { toast } from "react-hot-toast";
 import { defaultCategories } from "../Account/data.js";
 import { useNavigate } from "react-router-dom";
@@ -60,10 +62,16 @@ function AddTransactionForm() {
         if (form.type === "EXPENSE" && defaultAccount?._id) {
           console.log("Fetching budget for account:", defaultAccount._id); // Debug
           dispatch(fetchBudget(defaultAccount._id)).then(() => {
+            // Also refresh accounts and dashboard transactions to update balance
+            dispatch(fetchallAccount());
+            dispatch(DashfetchAllTransaction({ userId: backendUser._id }));
             // Navigate after fetch completes
             navigate("/dashboard");
           });
         } else {
+          // Also refresh accounts and dashboard transactions to update balance
+          dispatch(fetchallAccount());
+          dispatch(DashfetchAllTransaction({ userId: backendUser._id }));
           navigate("/dashboard");
         }
       } else {

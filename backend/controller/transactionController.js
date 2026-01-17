@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 
 export const createTransation = async (req, res) => {
   try {
-    const { userId: clerkId } = req.auth();
+    const { userId: clerkId } = req.auth;
     const {
       type,
       amount,
@@ -99,7 +99,7 @@ export const createTransation = async (req, res) => {
 
 export const fetchAllTransaction = async (req, res) => {
   try {
-    const { userId: clerkId } = req.auth();
+    const { userId: clerkId } = req.auth;
     const { accountId } = req.params;
 
     const trimmedAccountId = accountId.trim();
@@ -154,7 +154,7 @@ export const fetchAllTransaction = async (req, res) => {
 
 export const deleteAllTransaction = async (req, res) => {
   try {
-    const { userId: clerkId } = req.auth();
+    const { userId: clerkId } = req.auth;
     const { selectedIds, accountId } = req.body;
 
     console.log(selectedIds, "selectedids");

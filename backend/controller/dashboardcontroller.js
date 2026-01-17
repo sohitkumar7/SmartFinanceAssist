@@ -4,7 +4,7 @@ import User from "../models/user.js";
 
 export const dashboarddata = async (req, res) => {
   try {
-    const { userId: clerkId } = req.auth();
+    const { userId: clerkId } = req.auth;
 
     // Get user from database using clerkId
     const user = await User.findOne({ clerkId: clerkId });

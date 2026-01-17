@@ -1,4 +1,5 @@
-import { useUser } from "@clerk/clerk-react";
+
+import { useUser, useAuth } from "@clerk/clerk-react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Suspense, useEffect } from "react";
@@ -8,17 +9,22 @@ import Dashboardpage from "../pages/Dashboard/dashboardpage.jsx";
 import { BarLoader } from "react-spinners";
 import { fetchallAccount } from "../Store/Account-Slice/index.js";
 import { Loader2 } from "lucide-react";
-
-import { useAuthenticatedAxios } from "../hoook/useAuthenticated.js";
+import api from "../services/api.js";
 import { setUser } from "@/Store/Auth-Slice";
 
 function Dashboard() {
-  const { isLoaded, isSignedIn } = useUser();
+  const { isLoaded, isSignedIn, clerk } = useUser();
+  const { getToken } = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
 
-  const api = useAuthenticatedAxios();
+  useEffect(() => {
+    // Expose Clerk instance to window for API interceptor
+    if (clerk) {
+      window.Clerk = clerk;
+    }
+  }, [clerk]);
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -30,6 +36,10 @@ function Dashboard() {
     if (isLoaded && isSignedIn && !isAuthenticated) {
       const loadUser = async () => {
         try {
+          // Get and store the Clerk token
+          const token = await getToken();
+          sessionStorage.setItem("clerk_token", token);
+          
           const res = await api.get("/api/user/me");
           dispatch(setUser(res.data.user));
           dispatch(fetchallAccount());
@@ -80,3 +90,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
