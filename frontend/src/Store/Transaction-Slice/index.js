@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import api from "../../services/api.js";
 import reducer from "../Account-Slice";
 
 const initialState = {
@@ -12,7 +12,7 @@ const initialState = {
 export const createTransaction = createAsyncThunk(
   "/create/transaction",
   async (formData) => {
-    const response = axios.post("/api/transaction/create", formData);
+    const response = api.post("/api/transaction/create", formData);
     return (await response).data;
   }
 );
@@ -20,7 +20,7 @@ export const createTransaction = createAsyncThunk(
 export const fetchAllTransaction = createAsyncThunk(
   "/get/all/Transaction",
   async ({ accountId }) => {
-    const response = await axios.get(`/api/transaction/get/all/${accountId}`);
+    const response = await api.get(`/api/transaction/get/all/${accountId}`);
     // console.log("response",response);
     return response.data;
   }
@@ -29,7 +29,7 @@ export const fetchAllTransaction = createAsyncThunk(
 export const DeletTransaction = createAsyncThunk("/delete/transaction" , async(formdata) => {
 
     console.log(formdata,"formdata")
-    const response = await axios.post("/api/transaction/delete/all",formdata);
+    const response = await api.post("/api/transaction/delete/all",formdata);
     return response.data;
 
 })

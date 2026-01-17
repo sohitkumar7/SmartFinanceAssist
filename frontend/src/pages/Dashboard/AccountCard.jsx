@@ -6,7 +6,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import { Switch } from "../../components/ui/switch.jsx";
+
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+
 import { ArrowDownLeft, ArrowUpRight, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,6 +40,7 @@ function AccountCard({ account }) {
 
   const { name, AccountType, balance, _id, isDefault } = account;
 
+  // ---------------- Default Switch Handler ----------------
   function handlechange(e) {
     e.stopPropagation();
 
@@ -44,7 +59,8 @@ function AccountCard({ account }) {
     });
   }
 
-  function handleDelete(e) {
+  // ---------------- Delete Confirmation Handler ----------------
+  function handleDeleteConfirmed(e) {
     e.stopPropagation();
 
     if (isDefault) {
@@ -52,14 +68,10 @@ function AccountCard({ account }) {
       return;
     }
 
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this account?"
-    );
-    if (!confirmDelete) return;
-
     dispatch(deleteAccount({ accountId: _id })).then((res) => {
       if (res?.payload?.success) {
         toast.success("Account deleted successfully");
+        dispatch(fetchallAccount({ UserId: backendUser._id }));
       } else {
         toast.error("Failed to delete account");
       }
@@ -71,6 +83,7 @@ function AccountCard({ account }) {
       onClick={() => navigate(`/account/${_id}`, { state: { account } })}
       className="group hover:shadow-md transition-shadow cursor-pointer w-full"
     >
+      {/* ---------------- Header ---------------- */}
       <CardHeader className="flex flex-row items-center justify-between pb-2 px-4 sm:px-6">
         <CardTitle className="text-sm sm:text-base font-medium capitalize truncate max-w-[60%]">
           {name}
@@ -79,19 +92,51 @@ function AccountCard({ account }) {
         <div className="flex items-center gap-2">
           <Switch checked={isDefault} onClick={handlechange} />
 
-          <button
-            onClick={handleDelete}
-            className="
-              text-red-500 hover:text-red-700
-              opacity-0 group-hover:opacity-100
-              transition-opacity duration-200
-            "
-          >
-            <Trash2 size={18} />
-          </button>
+          {/* ---------- Delete Confirmation Modal ---------- */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                onClick={(e) => e.stopPropagation()}
+                className="
+                  text-red-500 hover:text-red-700
+                  opacity-0 group-hover:opacity-100
+                  transition-opacity duration-200
+                "
+              >
+                <Trash2 size={18} />
+              </button>
+            </AlertDialogTrigger>
+
+            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Delete Account?
+                </AlertDialogTitle>
+
+                <AlertDialogDescription>
+                  This action cannot be undone.  
+                  All transactions related to this account will be permanently deleted.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+
+              <AlertDialogFooter>
+                <AlertDialogCancel>
+                  Cancel
+                </AlertDialogCancel>
+
+                <AlertDialogAction
+                  onClick={handleDeleteConfirmed}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Yes, Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </CardHeader>
 
+      {/* ---------------- Body ---------------- */}
       <CardContent className="px-4 sm:px-6">
         <div className="text-xl sm:text-2xl font-bold truncate">
           ₹{balance}
@@ -101,6 +146,7 @@ function AccountCard({ account }) {
         </p>
       </CardContent>
 
+      {/* ---------------- Footer ---------------- */}
       <CardFooter className="flex flex-col sm:flex-row sm:justify-between gap-2 px-4 sm:px-6 text-xs sm:text-sm text-muted-foreground">
         <div className="flex items-center">
           <ArrowUpRight className="mr-1 h-4 w-4 text-green-500" />

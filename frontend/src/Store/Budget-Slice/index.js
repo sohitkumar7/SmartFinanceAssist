@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import api from "../../services/api.js";
 
 const initialState = {
   budgetAmount: null,
@@ -11,13 +11,13 @@ const initialState = {
 export const createBudget = createAsyncThunk(
   "/create/update/budget",
   async ( formData ) => {
-    const response = await axios.post("/api/Budget/Upsert", formData);
+    const response = await api.post("/api/Budget/Upsert", formData);
     return response.data;
   }
 );
 
 export const fetchBudget = createAsyncThunk("/Fetch/budget", async (AccountId) => {
-  const response = await axios.get(`/api/Budget/fetchBudget/${AccountId}`);
+  const response = await api.get(`/api/Budget/fetchBudget/${AccountId}`);
   return response.data;
 });
 

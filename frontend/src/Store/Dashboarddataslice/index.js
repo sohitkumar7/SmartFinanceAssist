@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import api from "../../services/api.js";
 
 const initialState = {
   DashallTransaction: [],
@@ -10,7 +10,7 @@ export const DashfetchAllTransaction = createAsyncThunk(
   "dashboard/getAllTransaction",
   async ({ userId }, thunkAPI) => {
     try {
-      const response = await axios.get(`/api/data/getdata/${userId}`);
+      const response = await api.get(`/api/data/getdata/${userId}`);
       return response.data; // expecting { success, data }
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || "Error");

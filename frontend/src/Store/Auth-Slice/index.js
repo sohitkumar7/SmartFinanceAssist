@@ -1,5 +1,6 @@
   import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+// import api from "api";
+import api from "../../services/api.js";
 
 const initialState = {
   isAuthenticated: false,
@@ -10,7 +11,7 @@ const initialState = {
 // This thunk will now make a GET request to a protected route
 // without passing any user ID from the frontend.
 export const fetchCurrentUser = createAsyncThunk("/auth/currentUser", async () => {
-  const response = await axios.get("/api/user/me");
+  const response = await api.get("/api/user/me");
   return response.data;
 });
 

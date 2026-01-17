@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import { defaultCategories } from "../Account/data.js";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button.jsx";
-import axios from "axios";
+import api from "../../services/api.js";
 
 function AddTransactionForm() {
   const dispatch = useDispatch();
@@ -78,7 +78,7 @@ const handleUploadReceipt = async () => {
   formData.append("accountId", defaultAccount._id);  
 
   try {
-    const res = await axios.post(
+    const res = await api.post(
       "/api/ai/receipt-transaction",
       formData,
       { headers: { "Content-Type": "multipart/form-data" } }

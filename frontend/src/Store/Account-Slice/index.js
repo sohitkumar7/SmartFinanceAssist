@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import api from "../../services/api.js";
 
 const initialState = {
   allAccount: [],
@@ -10,7 +10,7 @@ const initialState = {
 export const createAccount = createAsyncThunk(
   "/create/account",
   async (formData) => {
-    const response = await axios.post("/api/account/create", formData);
+    const response = await api.post("/api/account/create", formData);
     return response.data;
   }
 );
@@ -18,14 +18,14 @@ export const createAccount = createAsyncThunk(
 export const fetchallAccount = createAsyncThunk(
   "/get/allAccount",
   async ({ UserId }) => {
-    const response = await axios.get(`/api/account/get/${UserId}`);
+    const response = await api.get(`/api/account/get/${UserId}`);
     return response.data;
   }
 );
 export const makeoneDefault = createAsyncThunk(
   "/change/iusDefault",
   async ({ accountId }) => {
-    const response = await axios.put(`/api/account/change/${accountId}`);
+    const response = await api.put(`/api/account/change/${accountId}`);
     return response.data;
   }
 );
@@ -34,7 +34,7 @@ export const deleteAccount = createAsyncThunk(
   "/delete/account",
   async ({ accountId }, thunkAPI) => {
     try {
-      const response = await axios.delete(`/api/account/delete/${accountId}`);
+      const response = await api.delete(`/api/account/delete/${accountId}`);
       return { ...response.data, accountId }; // send id back to reducer
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || "Error");
