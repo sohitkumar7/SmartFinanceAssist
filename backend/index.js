@@ -11,6 +11,7 @@ import transactionRoute from "./Router/transactionRoute.js"
 import BudgetRouter from "./Router/bugetRouter.js";
 import aiTransactionRoutes from "./Router/geminiapi.js"
 import dashboardrouter from "./Router/dashboarddata.js";
+import { clerkMiddleware } from "@clerk/express";
 
 dotenv.config();
 const app = express();
@@ -26,7 +27,7 @@ app.use(
     credentials: true,
   })
 );
-
+app.use(clerkMiddleware());
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
