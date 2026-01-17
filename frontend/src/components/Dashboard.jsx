@@ -9,7 +9,7 @@ import { BarLoader } from "react-spinners";
 import { fetchallAccount } from "../Store/Account-Slice/index.js";
 import { Loader2 } from "lucide-react";
 
-import { useAuthenticatedAxios } from "@/hooks/useAuthenticatedAxios";
+import { useAuthenticatedAxios } from "../hoook/useAuthenticated.js";
 import { setUser } from "@/Store/Auth-Slice";
 
 function Dashboard() {
