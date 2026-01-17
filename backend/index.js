@@ -21,7 +21,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "smart-finance-assist.vercel.app"
+      "https://smart-finance-assist.vercel.app/"
     ],
     credentials: true,
   })
