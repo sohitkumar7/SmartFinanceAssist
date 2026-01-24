@@ -14,7 +14,7 @@ function Account() {
   return (
     <>
       <Header />
-      <AccountPage account = {account} ></AccountPage>
+      <AccountPage key={account._id} account = {account} ></AccountPage>
       {/* <div>{params.accountId}</div> */}
     </>
   );

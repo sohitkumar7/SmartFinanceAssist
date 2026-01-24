@@ -56,6 +56,18 @@ const DashboardOverview = () => {
 
   const [selectedAccountId, setSelectedAccountId] = useState("");
 
+  // ✅ Control label visibility based on screen size
+  const [showLabel, setShowLabel] = useState(window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setShowLabel(window.innerWidth >= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     if (backendUser?._id) {
       dispatch(DashfetchAllTransaction({ userId: backendUser._id }));
@@ -66,12 +78,10 @@ const DashboardOverview = () => {
     if (accounts.length > 0) {
       const defaultAcc = accounts.find((a) => a.isDefault) || accounts[0];
       setSelectedAccountId(defaultAcc._id);
-      // Fetch budget for the default account
       dispatch(fetchBudget(defaultAcc._id));
     }
   }, [accounts, dispatch]);
 
-  // Fetch budget when selected account changes
   useEffect(() => {
     if (selectedAccountId) {
       dispatch(fetchBudget(selectedAccountId));
@@ -110,6 +120,7 @@ const DashboardOverview = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full overflow-x-hidden">
+      {/* ================= Recent Transactions ================= */}
       <Card className="w-full max-w-full overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-4 px-4 sm:px-6">
           <CardTitle className="text-base font-normal">
@@ -178,6 +189,7 @@ const DashboardOverview = () => {
         </CardContent>
       </Card>
 
+      {/* ================= Monthly Expense Chart ================= */}
       <Card className="w-full max-w-full overflow-hidden">
         <CardHeader className="px-4 sm:px-6">
           <CardTitle className="text-base font-normal">
@@ -200,15 +212,10 @@ const DashboardOverview = () => {
                     cy="50%"
                     outerRadius={70}
                     dataKey="value"
-                    label={({ name, value }) =>
-                      `${name}: ₹${value.toFixed(0)}`
-                    }
+                    label={showLabel ? ({ value }) => `₹${value.toFixed(0)}` : false}
                   >
                     {pieChartData.map((_, i) => (
-                      <Cell
-                        key={i}
-                        fill={COLORS[i % COLORS.length]}
-                      />
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip />

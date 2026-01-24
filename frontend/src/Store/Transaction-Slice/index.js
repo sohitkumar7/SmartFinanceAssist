@@ -55,7 +55,11 @@ const transactionSlice = createSlice({
       })
       .addCase(createTransaction.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.allTransaction = action?.payload?.data?.data;
+        const newTransaction = action?.payload?.data?.data;
+        if (newTransaction) {
+          // Prepend new transaction to the list for optimistic update
+          state.allTransaction = [newTransaction, ...state.allTransaction];
+        }
         state.updatedBalance = action?.payload?.updatedBalance
       })
 

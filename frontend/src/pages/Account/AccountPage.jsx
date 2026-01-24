@@ -10,13 +10,15 @@ function AccountPage({ account }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const accountId = account._id;
-    dispatch(fetchAllTransaction({ accountId })).then((data) => {
-      if (!data.payload?.success) {
-        toast.error("Error in Fetching All Transaction");
-      }
-    });
-  }, []);
+    if (account?._id) {
+      const accountId = account._id;
+      dispatch(fetchAllTransaction({ accountId })).then((data) => {
+        if (!data.payload?.success) {
+          toast.error("Error in Fetching All Transaction");
+        }
+      });
+    }
+  }, [account?._id]);
 
   const { allTransaction, TotalTransaction, updatedBalance } = useSelector(
     (state) => state.Transaction

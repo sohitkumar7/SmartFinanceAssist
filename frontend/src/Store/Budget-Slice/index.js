@@ -28,7 +28,14 @@ export const fetchBudget = createAsyncThunk("/Fetch/budget", async (AccountId) =
 const BudgetSlice = createSlice({
   name: "budget",
   initialState,
-  reducers: {},
+  reducers: {
+    resetBudget: (state) => {
+      state.budgetAmount = null;
+      state.currentMonthExpenses = 0;
+      state.remaining = null;
+      state.isLoading = false;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createBudget.pending, (state) => {
@@ -66,4 +73,5 @@ const BudgetSlice = createSlice({
   },
 });
 
+export const { resetBudget } = BudgetSlice.actions;
 export default BudgetSlice.reducer;

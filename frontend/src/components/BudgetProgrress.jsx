@@ -10,7 +10,7 @@ import {
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Check, Pencil, X } from "lucide-react";
-import { createBudget, fetchBudget } from "../Store/Budget-Slice/index.js";
+import { createBudget, fetchBudget, resetBudget } from "../Store/Budget-Slice/index.js";
 import toast from "react-hot-toast";
 import {Progress} from "../components/ui/progress.jsx"
 
@@ -25,9 +25,23 @@ function BudgetProgrress({DefaultAccount}) {
   // Fetch budget on mount and when account changes
   useEffect(() => {
     if (DefaultAccount?._id) {
+      // Reset budget state before fetching for new account
+      dispatch(resetBudget());
       dispatch(fetchBudget(DefaultAccount._id));
     }
   }, [DefaultAccount, dispatch]);
+
+  // Sync newBudget with budgetAmount when it changes (e.g., when switching accounts)
+  useEffect(() => {
+    if (budgetAmount !== null) {
+      setNewBudget(budgetAmount);
+    }
+  }, [budgetAmount]);
+
+  // Reset editing state when switching accounts
+  useEffect(() => {
+    setIsEditing(false);
+  }, [DefaultAccount?._id]);
 
   // console.log(backendUser);
 

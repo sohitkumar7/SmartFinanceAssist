@@ -21,7 +21,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-import { ArrowDownLeft, ArrowUpRight, Trash2 } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Trash2, Plus, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -159,6 +159,64 @@ function AccountCard({ account }) {
           <ArrowDownLeft className="mr-1 h-4 w-4 text-red-500" />
           Expense
         </div>
+        
+        {/* Add Transaction Button - Only visible for default accounts */}
+        {isDefault ? (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate("/transaction", { state: { account } });
+            }}
+            className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium transition-colors"
+          >
+            <Plus size={14} />
+            Add Transaction
+          </button>
+        ) : (
+          /* AlertDialog for non-default accounts */
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1 text-gray-400 hover:text-gray-600 font-medium transition-colors cursor-not-allowed"
+              >
+                <Plus size={14} />
+                Add Transaction
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Make This Account Default?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  You can only add transactions to your default account. 
+                  Would you like to make <strong>{name}</strong> your default account?
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    dispatch(makeoneDefault({ accountId: _id })).then((res) => {
+                      if (res?.payload?.success) {
+                        toast.success(`${name} is now your default account`);
+                        dispatch(fetchallAccount({ UserId: backendUser._id }));
+                        dispatch(fetchBudget(_id));
+                      } else {
+                        toast.error("Failed to change default account");
+                      }
+                    });
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Make Default
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </CardFooter>
     </Card>
   );
