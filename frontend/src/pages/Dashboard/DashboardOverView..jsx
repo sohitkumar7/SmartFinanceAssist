@@ -56,12 +56,12 @@ const DashboardOverview = () => {
 
   const [selectedAccountId, setSelectedAccountId] = useState("");
 
-  // ✅ Control label visibility based on screen size
-  const [showLabel, setShowLabel] = useState(window.innerWidth >= 768);
+  // ✅ Control label format based on screen size
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 768);
 
   useEffect(() => {
     const handleResize = () => {
-      setShowLabel(window.innerWidth >= 768);
+      setIsLargeScreen(window.innerWidth >= 768);
     };
 
     window.addEventListener("resize", handleResize);
@@ -117,6 +117,8 @@ const DashboardOverview = () => {
       value: amount,
     })
   );
+
+  const totalAmount = pieChartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full overflow-x-hidden">
@@ -195,6 +197,11 @@ const DashboardOverview = () => {
           <CardTitle className="text-base font-normal">
             Monthly Expense Breakdown
           </CardTitle>
+          {totalAmount > 0 && (
+            <p className="text-sm font-medium text-muted-foreground">
+              Total: ₹{totalAmount.toFixed(2)}
+            </p>
+          )}
         </CardHeader>
 
         <CardContent className="p-0 pb-5">
@@ -212,7 +219,9 @@ const DashboardOverview = () => {
                     cy="50%"
                     outerRadius={70}
                     dataKey="value"
-                    label={showLabel ? ({ value }) => `₹${value.toFixed(0)}` : false}
+                    label={({ name, value }) => 
+                      isLargeScreen ? `${name}: ₹${value.toFixed(0)}` : `₹${value.toFixed(0)}`
+                    }
                   >
                     {pieChartData.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
